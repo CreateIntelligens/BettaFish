@@ -1,6 +1,6 @@
 """
-Forum日志读取工具
-用于读取forum.log中的最新HOST发言
+Forum日誌讀取工具
+用於讀取forum.log中的最新HOST發言
 """
 
 import re
@@ -13,13 +13,13 @@ logger = logging.getLogger(__name__)
 
 def get_latest_host_speech(log_dir: str = "logs") -> Optional[str]:
     """
-    获取forum.log中最新的HOST发言
+    獲取forum.log中最新的HOST發言
     
     Args:
-        log_dir: 日志目录路径
+        log_dir: 日誌目錄路徑
         
     Returns:
-        最新的HOST发言内容，如果没有则返回None
+        最新的HOST發言內容，如果沒有則返回None
     """
     try:
         forum_log_path = Path(log_dir) / "forum.log"
@@ -31,38 +31,38 @@ def get_latest_host_speech(log_dir: str = "logs") -> Optional[str]:
         with open(forum_log_path, 'r', encoding='utf-8', errors='ignore') as f:
             lines = f.readlines()
         
-        # 从后往前查找最新的HOST发言
+        # 從後往前查找最新的HOST發言
         host_speech = None
         for line in reversed(lines):
-            # 匹配格式: [时间] [HOST] 内容
+            # 匹配格式: [時間] [HOST] 內容
             match = re.match(r'\[(\d{2}:\d{2}:\d{2})\]\s*\[HOST\]\s*(.+)', line)
             if match:
                 _, content = match.groups()
-                # 处理转义的换行符，还原为实际换行
+                # 處理轉義的換行符，還原爲實際換行
                 host_speech = content.replace('\\n', '\n').strip()
                 break
         
         if host_speech:
-            logger.info(f"找到最新的HOST发言，长度: {len(host_speech)}字符")
+            logger.info(f"找到最新的HOST發言，長度: {len(host_speech)}字符")
         else:
-            logger.debug("未找到HOST发言")
+            logger.debug("未找到HOST發言")
             
         return host_speech
         
     except Exception as e:
-        logger.error(f"读取forum.log失败: {str(e)}")
+        logger.error(f"讀取forum.log失敗: {str(e)}")
         return None
 
 
 def get_all_host_speeches(log_dir: str = "logs") -> List[Dict[str, str]]:
     """
-    获取forum.log中所有的HOST发言
+    獲取forum.log中所有的HOST發言
     
     Args:
-        log_dir: 日志目录路径
+        log_dir: 日誌目錄路徑
         
     Returns:
-        包含所有HOST发言的列表，每个元素是包含timestamp和content的字典
+        包含所有HOST發言的列表，每個元素是包含timestamp和content的字典
     """
     try:
         forum_log_path = Path(log_dir) / "forum.log"
@@ -76,35 +76,35 @@ def get_all_host_speeches(log_dir: str = "logs") -> List[Dict[str, str]]:
         
         host_speeches = []
         for line in lines:
-            # 匹配格式: [时间] [HOST] 内容
+            # 匹配格式: [時間] [HOST] 內容
             match = re.match(r'\[(\d{2}:\d{2}:\d{2})\]\s*\[HOST\]\s*(.+)', line)
             if match:
                 timestamp, content = match.groups()
-                # 处理转义的换行符
+                # 處理轉義的換行符
                 content = content.replace('\\n', '\n').strip()
                 host_speeches.append({
                     'timestamp': timestamp,
                     'content': content
                 })
         
-        logger.info(f"找到{len(host_speeches)}条HOST发言")
+        logger.info(f"找到{len(host_speeches)}條HOST發言")
         return host_speeches
         
     except Exception as e:
-        logger.error(f"读取forum.log失败: {str(e)}")
+        logger.error(f"讀取forum.log失敗: {str(e)}")
         return []
 
 
 def get_recent_agent_speeches(log_dir: str = "logs", limit: int = 5) -> List[Dict[str, str]]:
     """
-    获取forum.log中最近的Agent发言（不包括HOST）
+    獲取forum.log中最近的Agent發言（不包括HOST）
     
     Args:
-        log_dir: 日志目录路径
-        limit: 返回的最大发言数量
+        log_dir: 日誌目錄路徑
+        limit: 返回的最大發言數量
         
     Returns:
-        包含最近Agent发言的列表
+        包含最近Agent發言的列表
     """
     try:
         forum_log_path = Path(log_dir) / "forum.log"
@@ -116,12 +116,12 @@ def get_recent_agent_speeches(log_dir: str = "logs", limit: int = 5) -> List[Dic
             lines = f.readlines()
         
         agent_speeches = []
-        for line in reversed(lines):  # 从后往前读取
-            # 匹配格式: [时间] [AGENT_NAME] 内容
+        for line in reversed(lines):  # 從後往前讀取
+            # 匹配格式: [時間] [AGENT_NAME] 內容
             match = re.match(r'\[(\d{2}:\d{2}:\d{2})\]\s*\[(INSIGHT|MEDIA|QUERY)\]\s*(.+)', line)
             if match:
                 timestamp, agent, content = match.groups()
-                # 处理转义的换行符
+                # 處理轉義的換行符
                 content = content.replace('\\n', '\n').strip()
                 agent_speeches.append({
                     'timestamp': timestamp,
@@ -131,30 +131,30 @@ def get_recent_agent_speeches(log_dir: str = "logs", limit: int = 5) -> List[Dic
                 if len(agent_speeches) >= limit:
                     break
         
-        agent_speeches.reverse()  # 恢复时间顺序
+        agent_speeches.reverse()  # 恢復時間順序
         return agent_speeches
         
     except Exception as e:
-        logger.error(f"读取forum.log失败: {str(e)}")
+        logger.error(f"讀取forum.log失敗: {str(e)}")
         return []
 
 
 def format_host_speech_for_prompt(host_speech: str) -> str:
     """
-    格式化HOST发言，用于添加到prompt中
+    格式化HOST發言，用於添加到prompt中
     
     Args:
-        host_speech: HOST发言内容
+        host_speech: HOST發言內容
         
     Returns:
-        格式化后的内容
+        格式化後的內容
     """
     if not host_speech:
         return ""
     
     return f"""
-### 论坛主持人最新总结
-以下是论坛主持人对各Agent讨论的最新总结和引导，请参考其中的观点和建议：
+### 論壇主持人最新總結
+以下是論壇主持人對各Agent討論的最新總結和引導，請參考其中的觀點和建議：
 
 {host_speech}
 

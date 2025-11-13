@@ -1,6 +1,6 @@
 """
 Deep Search Agent
-一个无框架的深度搜索AI代理实现
+一個無框架的深度搜索AI代理實現
 """
 
 from .agent import DeepSearchAgent, create_agent

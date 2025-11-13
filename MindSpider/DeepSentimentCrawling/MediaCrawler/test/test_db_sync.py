@@ -1,32 +1,32 @@
 # -*- coding: utf-8 -*-
 # @Author  : persist-1<persist1@126.com>
 # @Time    : 2025/9/8 00:02
-# @Desc    : 用于将orm映射模型（database/models.py）与两种数据库实际结构进行对比，并进行更新操作（连接数据库->结构比对->差异报告->交互式同步）
-# @Tips    : 该脚本需要安装依赖'pymysql==1.1.0'
+# @Desc    : 用於將orm映射模型（database/models.py）與兩種數據庫實際結構進行對比，並進行更新操作（連接數據庫->結構比對->差異報告->交互式同步）
+# @Tips    : 該腳本需要安裝依賴'pymysql==1.1.0'
 
 import os
 import sys
 from sqlalchemy import create_engine, inspect as sqlalchemy_inspect
 from sqlalchemy.schema import MetaData
 
-# 将项目根目录添加到 sys.path
+# 將項目根目錄添加到 sys.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from config.db_config import mysql_db_config, sqlite_db_config
 from database.models import Base
 
 def get_mysql_engine():
-    """创建并返回一个MySQL数据库引擎"""
+    """創建並返回一個MySQL數據庫引擎"""
     conn_str = f"mysql+pymysql://{mysql_db_config['user']}:{mysql_db_config['password']}@{mysql_db_config['host']}:{mysql_db_config['port']}/{mysql_db_config['db_name']}"
     return create_engine(conn_str)
 
 def get_sqlite_engine():
-    """创建并返回一个SQLite数据库引擎"""
+    """創建並返回一個SQLite數據庫引擎"""
     conn_str = f"sqlite:///{sqlite_db_config['db_path']}"
     return create_engine(conn_str)
 
 def get_db_schema(engine):
-    """获取数据库的当前表结构"""
+    """獲取數據庫的當前表結構"""
     inspector = sqlalchemy_inspect(engine)
     schema = {}
     for table_name in inspector.get_table_names():
@@ -37,7 +37,7 @@ def get_db_schema(engine):
     return schema
 
 def get_orm_schema():
-    """获取ORM模型的表结构"""
+    """獲取ORM模型的表結構"""
     schema = {}
     for table_name, table in Base.metadata.tables.items():
         columns = {}
@@ -47,7 +47,7 @@ def get_orm_schema():
     return schema
 
 def compare_schemas(db_schema, orm_schema):
-    """比较数据库结构和ORM模型结构，返回差异"""
+    """比較數據庫結構和ORM模型結構，返回差異"""
     db_tables = set(db_schema.keys())
     orm_tables = set(orm_schema.keys())
 
@@ -82,10 +82,10 @@ def compare_schemas(db_schema, orm_schema):
     }
 
 def print_diff(db_name, diff):
-    """打印差异报告"""
-    print(f"--- {db_name} 数据库结构差异报告 ---")
+    """打印差異報告"""
+    print(f"--- {db_name} 數據庫結構差異報告 ---")
     if not any(diff.values()):
-        print("数据库结构与ORM模型一致，无需同步。")
+        print("數據庫結構與ORM模型一致，無需同步。")
         return
 
     if diff.get("added_tables"):
@@ -94,27 +94,27 @@ def print_diff(db_name, diff):
             print(f"  - {table}")
 
     if diff.get("deleted_tables"):
-        print("\n[-] 删除的表:")
+        print("\n[-] 刪除的表:")
         for table in diff["deleted_tables"]:
             print(f"  - {table}")
 
     if diff.get("changed_tables"):
-        print("\n[*] 变动的表:")
+        print("\n[*] 變動的表:")
         for table, changes in diff["changed_tables"].items():
             print(f"  - {table}:")
             if changes.get("added"):
                 print("    [+] 新增字段:", ", ".join(changes["added"]))
             if changes.get("deleted"):
-                print("    [-] 删除字段:", ", ".join(changes["deleted"]))
+                print("    [-] 刪除字段:", ", ".join(changes["deleted"]))
             if changes.get("modified"):
                 print("    [*] 修改字段:")
                 for col, types in changes["modified"].items():
                     print(f"      - {col}: {types[0]} -> {types[1]}")
-    print("--- 报告结束 ---")
+    print("--- 報告結束 ---")
 
 
 def sync_database(engine, diff):
-    """将ORM模型同步到数据库"""
+    """將ORM模型同步到數據庫"""
     metadata = Base.metadata
     
     # Alembic的上下文配置
@@ -125,24 +125,24 @@ def sync_database(engine, diff):
     ctx = MigrationContext.configure(conn)
     op = Operations(ctx)
 
-    # 处理删除的表
+    # 處理刪除的表
     for table_name in diff['deleted_tables']:
         op.drop_table(table_name)
-        print(f"已删除表: {table_name}")
+        print(f"已刪除表: {table_name}")
 
-    # 处理新增的表
+    # 處理新增的表
     for table_name in diff['added_tables']:
         table = metadata.tables.get(table_name)
         if table is not None:
             table.create(engine)
-            print(f"已创建表: {table_name}")
+            print(f"已創建表: {table_name}")
 
-    # 处理字段变更
+    # 處理字段變更
     for table_name, changes in diff['changed_tables'].items():
-        # 删除字段
+        # 刪除字段
         for col_name in changes['deleted']:
             op.drop_column(table_name, col_name)
-            print(f"在表 {table_name} 中已删除字段: {col_name}")
+            print(f"在表 {table_name} 中已刪除字段: {col_name}")
         # 新增字段
         for col_name in changes['added']:
             table = metadata.tables.get(table_name)
@@ -158,50 +158,50 @@ def sync_database(engine, diff):
                 column = table.columns.get(col_name)
                 if column is not None:
                     op.alter_column(table_name, col_name, type_=column.type)
-                    print(f"在表 {table_name} 中已修改字段: {col_name} (类型变为 {column.type})")
+                    print(f"在表 {table_name} 中已修改字段: {col_name} (類型變爲 {column.type})")
 
 
 def main():
-    """主函数"""
+    """主函數"""
     orm_schema = get_orm_schema()
 
-    # 处理 MySQL
+    # 處理 MySQL
     try:
         mysql_engine = get_mysql_engine()
         mysql_schema = get_db_schema(mysql_engine)
         mysql_diff = compare_schemas(mysql_schema, orm_schema)
         print_diff("MySQL", mysql_diff)
         if any(mysql_diff.values()):
-            choice = input(">>> 需要人工确认：是否要将ORM模型同步到MySQL数据库? (y/N): ")
+            choice = input(">>> 需要人工確認：是否要將ORM模型同步到MySQL數據庫? (y/N): ")
             if choice.lower() == 'y':
                 sync_database(mysql_engine, mysql_diff)
-                print("MySQL数据库同步完成。")
+                print("MySQL數據庫同步完成。")
     except Exception as e:
-        print(f"处理MySQL时出错: {e}")
+        print(f"處理MySQL時出錯: {e}")
 
 
-    # 处理 SQLite
+    # 處理 SQLite
     try:
         sqlite_engine = get_sqlite_engine()
         sqlite_schema = get_db_schema(sqlite_engine)
         sqlite_diff = compare_schemas(sqlite_schema, orm_schema)
         print_diff("SQLite", sqlite_diff)
         if any(sqlite_diff.values()):
-            choice = input(">>> 需要人工确认：是否要将ORM模型同步到SQLite数据库? (y/N): ")
+            choice = input(">>> 需要人工確認：是否要將ORM模型同步到SQLite數據庫? (y/N): ")
             if choice.lower() == 'y':
-                # 注意：SQLite不支持ALTER COLUMN来修改字段类型，这里简化处理
-                print("警告：SQLite的字段修改支持有限，此脚本不会执行修改字段类型的操作。")
+                # 注意：SQLite不支持ALTER COLUMN來修改字段類型，這裏簡化處理
+                print("警告：SQLite的字段修改支持有限，此腳本不會執行修改字段類型的操作。")
                 sync_database(sqlite_engine, sqlite_diff)
-                print("SQLite数据库同步完成。")
+                print("SQLite數據庫同步完成。")
     except Exception as e:
-        print(f"处理SQLite时出错: {e}")
+        print(f"處理SQLite時出錯: {e}")
 
 
 if __name__ == "__main__":
     main()
 
 ######################### Feedback example #########################
-# [*] 变动的表:
+# [*] 變動的表:
 #   - kuaishou_video:
 #     [*] 修改字段:
 #       - user_id: TEXT -> VARCHAR(64)
@@ -220,14 +220,14 @@ if __name__ == "__main__":
 #       - publish_time: BIGINT -> VARCHAR(255)
 #       - tieba_id: INTEGER -> VARCHAR(255)
 #       - note_id: BIGINT -> VARCHAR(644)
-# --- 报告结束 ---
-# >>> 需要人工确认：是否要将ORM模型同步到MySQL数据库? (y/N): y
-# 在表 kuaishou_video 中已修改字段: user_id (类型变为 VARCHAR(64))
-# 在表 xhs_note_comment 中已修改字段: comment_id (类型变为 VARCHAR(255))
-# 在表 zhihu_content 中已修改字段: created_time (类型变为 VARCHAR(32))
-# 在表 zhihu_content 中已修改字段: content_id (类型变为 VARCHAR(64))
-# 在表 zhihu_creator 中已修改字段: user_id (类型变为 VARCHAR(64))
-# 在表 tieba_note 中已修改字段: publish_time (类型变为 VARCHAR(255))
-# 在表 tieba_note 中已修改字段: tieba_id (类型变为 VARCHAR(255))
-# 在表 tieba_note 中已修改字段: note_id (类型变为 VARCHAR(644))
-# MySQL数据库同步完成。
+# --- 報告結束 ---
+# >>> 需要人工確認：是否要將ORM模型同步到MySQL數據庫? (y/N): y
+# 在表 kuaishou_video 中已修改字段: user_id (類型變爲 VARCHAR(64))
+# 在表 xhs_note_comment 中已修改字段: comment_id (類型變爲 VARCHAR(255))
+# 在表 zhihu_content 中已修改字段: created_time (類型變爲 VARCHAR(32))
+# 在表 zhihu_content 中已修改字段: content_id (類型變爲 VARCHAR(64))
+# 在表 zhihu_creator 中已修改字段: user_id (類型變爲 VARCHAR(64))
+# 在表 tieba_note 中已修改字段: publish_time (類型變爲 VARCHAR(255))
+# 在表 tieba_note 中已修改字段: tieba_id (類型變爲 VARCHAR(255))
+# 在表 tieba_note 中已修改字段: note_id (類型變爲 VARCHAR(644))
+# MySQL數據庫同步完成。

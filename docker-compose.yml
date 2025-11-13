@@ -1,6 +1,18 @@
-version: "3.9"
-
 services:
+  nginx:
+    image: nginx:alpine
+    container_name: bettafish-nginx
+    restart: unless-stopped
+    ports:
+      - "8903:80"  # 對外統一使用 8903 端口
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./logs/nginx:/var/log/nginx
+    depends_on:
+      - bettafish
+    networks:
+      - bettafish-network
+
   bettafish:
     build:
       context: .
@@ -12,12 +24,29 @@ services:
       - .env
     environment:
       - PYTHONUNBUFFERED=1
-    ports:
-      - "5000:5000"
-      - "8501:8501"
-      - "8502:8502"
-      - "8503:8503"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    # 不再直接暴露端口,由 Nginx 統一代理
+    expose:
+      - "5000"
+      - "8501"
+      - "8502"
+      - "8503"
+    networks:
+      - bettafish-network
     volumes:
+      # 掛載源代碼 (開發模式)
+      - .:/app
+      # 但排除這些目錄,避免容器內外衝突
+      - /app/__pycache__
+      - /app/.pytest_cache
+      - /app/db_data
+      # 持久化數據目錄
       - ./logs:/app/logs
       - ./final_reports:/app/final_reports
       - ./insight_engine_streamlit_reports:/app/insight_engine_streamlit_reports
@@ -28,13 +57,18 @@ services:
     image: postgres:15
     container_name: bettafish-db
     restart: unless-stopped
-    env_file:
-      - .env
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-bettafish}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-bettafish}
-      POSTGRES_DB: ${POSTGRES_DB:-bettafish}
+      POSTGRES_USER: bettafish
+      POSTGRES_PASSWORD: bettafish
+      POSTGRES_DB: bettafish
+      POSTGRES_INITDB_ARGS: "-E UTF8"
     ports:
-      - "${POSTGRES_PORT:-5444}:5432"
+      - "5444:5432"  # 宿主機 5444 映射到容器內 5432 (可選,用於外部連接)
     volumes:
       - ./db_data:/var/lib/postgresql/data
+    networks:
+      - bettafish-network
+
+networks:
+  bettafish-network:
+    driver: bridge

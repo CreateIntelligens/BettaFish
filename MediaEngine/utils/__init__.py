@@ -1,6 +1,6 @@
 """
-工具函数模块
-提供文本处理、JSON解析等辅助功能
+工具函數模塊
+提供文本處理、JSON解析等輔助功能
 """
 
 from .text_processing import (

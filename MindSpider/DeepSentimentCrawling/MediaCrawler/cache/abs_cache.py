@@ -1,19 +1,19 @@
-# 声明：本代码仅供学习和研究目的使用。使用者应遵守以下原则：  
-# 1. 不得用于任何商业用途。  
-# 2. 使用时应遵守目标平台的使用条款和robots.txt规则。  
-# 3. 不得进行大规模爬取或对平台造成运营干扰。  
-# 4. 应合理控制请求频率，避免给目标平台带来不必要的负担。   
-# 5. 不得用于任何非法或不当的用途。
+# 聲明：本代碼僅供學習和研究目的使用。使用者應遵守以下原則：  
+# 1. 不得用於任何商業用途。  
+# 2. 使用時應遵守目標平臺的使用條款和robots.txt規則。  
+# 3. 不得進行大規模爬取或對平臺造成運營幹擾。  
+# 4. 應合理控制請求頻率，避免給目標平臺帶來不必要的負擔。   
+# 5. 不得用於任何非法或不當的用途。
 #   
-# 详细许可条款请参阅项目根目录下的LICENSE文件。  
-# 使用本代码即表示您同意遵守上述原则和LICENSE中的所有条款。  
+# 詳細許可條款請參閱項目根目錄下的LICENSE文件。  
+# 使用本代碼即表示您同意遵守上述原則和LICENSE中的所有條款。  
 
 
 # -*- coding: utf-8 -*-
 # @Author  : relakkes@gmail.com
-# @Name    : 程序员阿江-Relakkes
+# @Name    : 程序員阿江-Relakkes
 # @Time    : 2024/6/2 11:06
-# @Desc    : 抽象类
+# @Desc    : 抽象類
 
 from abc import ABC, abstractmethod
 from typing import Any, List, Optional
@@ -24,9 +24,9 @@ class AbstractCache(ABC):
     @abstractmethod
     def get(self, key: str) -> Optional[Any]:
         """
-        从缓存中获取键的值。
-        这是一个抽象方法。子类必须实现这个方法。
-        :param key: 键
+        從緩存中獲取鍵的值。
+        這是一個抽象方法。子類必須實現這個方法。
+        :param key: 鍵
         :return:
         """
         raise NotImplementedError
@@ -34,11 +34,11 @@ class AbstractCache(ABC):
     @abstractmethod
     def set(self, key: str, value: Any, expire_time: int) -> None:
         """
-        将键的值设置到缓存中。
-        这是一个抽象方法。子类必须实现这个方法。
-        :param key: 键
+        將鍵的值設置到緩存中。
+        這是一個抽象方法。子類必須實現這個方法。
+        :param key: 鍵
         :param value: 值
-        :param expire_time: 过期时间
+        :param expire_time: 過期時間
         :return:
         """
         raise NotImplementedError
@@ -46,7 +46,7 @@ class AbstractCache(ABC):
     @abstractmethod
     def keys(self, pattern: str) -> List[str]:
         """
-        获取所有符合pattern的key
+        獲取所有符合pattern的key
         :param pattern: 匹配模式
         :return:
         """

@@ -1,12 +1,12 @@
-# 声明：本代码仅供学习和研究目的使用。使用者应遵守以下原则：
-# 1. 不得用于任何商业用途。
-# 2. 使用时应遵守目标平台的使用条款和robots.txt规则。
-# 3. 不得进行大规模爬取或对平台造成运营干扰。
-# 4. 应合理控制请求频率，避免给目标平台带来不必要的负担。
-# 5. 不得用于任何非法或不当的用途。
+# 聲明：本代碼僅供學習和研究目的使用。使用者應遵守以下原則：
+# 1. 不得用於任何商業用途。
+# 2. 使用時應遵守目標平臺的使用條款和robots.txt規則。
+# 3. 不得進行大規模爬取或對平臺造成運營幹擾。
+# 4. 應合理控制請求頻率，避免給目標平臺帶來不必要的負擔。
+# 5. 不得用於任何非法或不當的用途。
 #
-# 详细许可条款请参阅项目根目录下的LICENSE文件。
-# 使用本代码即表示您同意遵守上述原则和LICENSE中的所有条款。
+# 詳細許可條款請參閱項目根目錄下的LICENSE文件。
+# 使用本代碼即表示您同意遵守上述原則和LICENSE中的所有條款。
 
 
 from __future__ import annotations
@@ -28,7 +28,7 @@ EnumT = TypeVar("EnumT", bound=Enum)
 
 
 class PlatformEnum(str, Enum):
-    """支持的媒体平台枚举"""
+    """支持的媒體平臺枚舉"""
 
     XHS = "xhs"
     DOUYIN = "dy"
@@ -40,7 +40,7 @@ class PlatformEnum(str, Enum):
 
 
 class LoginTypeEnum(str, Enum):
-    """登录方式枚举"""
+    """登錄方式枚舉"""
 
     QRCODE = "qrcode"
     PHONE = "phone"
@@ -48,7 +48,7 @@ class LoginTypeEnum(str, Enum):
 
 
 class CrawlerTypeEnum(str, Enum):
-    """爬虫类型枚举"""
+    """爬蟲類型枚舉"""
 
     SEARCH = "search"
     DETAIL = "detail"
@@ -56,7 +56,7 @@ class CrawlerTypeEnum(str, Enum):
 
 
 class SaveDataOptionEnum(str, Enum):
-    """数据保存方式枚举"""
+    """數據保存方式枚舉"""
 
     CSV = "csv"
     DB = "db"
@@ -66,7 +66,7 @@ class SaveDataOptionEnum(str, Enum):
 
 
 class InitDbOptionEnum(str, Enum):
-    """数据库初始化选项"""
+    """數據庫初始化選項"""
 
     SQLITE = "sqlite"
     MYSQL = "mysql"
@@ -93,7 +93,7 @@ def _coerce_enum(
         return enum_cls(value)
     except ValueError:
         typer.secho(
-            f"⚠️ 配置值 '{value}' 不在 {enum_cls.__name__} 支持的范围内，已回退到默认值 '{default.value}'.",
+            f"⚠️ 配置值 '{value}' 不在 {enum_cls.__name__} 支持的範圍內，已回退到默認值 '{default.value}'.",
             fg=typer.colors.YELLOW,
         )
         return default
@@ -124,7 +124,7 @@ def _inject_init_db_default(args: Sequence[str]) -> list[str]:
 
 
 async def parse_cmd(argv: Optional[Sequence[str]] = None):
-    """使用 Typer 解析命令行参数。"""
+    """使用 Typer 解析命令行參數。"""
 
     app = typer.Typer(add_completion=False)
 
@@ -134,48 +134,48 @@ async def parse_cmd(argv: Optional[Sequence[str]] = None):
             PlatformEnum,
             typer.Option(
                 "--platform",
-                help="媒体平台选择 (xhs=小红书 | dy=抖音 | ks=快手 | bili=哔哩哔哩 | wb=微博 | tieba=百度贴吧 | zhihu=知乎)",
-                rich_help_panel="基础配置",
+                help="媒體平臺選擇 (xhs=小紅書 | dy=抖音 | ks=快手 | bili=嗶哩嗶哩 | wb=微博 | tieba=百度貼吧 | zhihu=知乎)",
+                rich_help_panel="基礎配置",
             ),
         ] = _coerce_enum(PlatformEnum, config.PLATFORM, PlatformEnum.XHS),
         lt: Annotated[
             LoginTypeEnum,
             typer.Option(
                 "--lt",
-                help="登录方式 (qrcode=二维码 | phone=手机号 | cookie=Cookie)",
-                rich_help_panel="账号配置",
+                help="登錄方式 (qrcode=二維碼 | phone=手機號 | cookie=Cookie)",
+                rich_help_panel="賬號配置",
             ),
         ] = _coerce_enum(LoginTypeEnum, config.LOGIN_TYPE, LoginTypeEnum.QRCODE),
         crawler_type: Annotated[
             CrawlerTypeEnum,
             typer.Option(
                 "--type",
-                help="爬取类型 (search=搜索 | detail=详情 | creator=创作者)",
-                rich_help_panel="基础配置",
+                help="爬取類型 (search=搜索 | detail=詳情 | creator=創作者)",
+                rich_help_panel="基礎配置",
             ),
         ] = _coerce_enum(CrawlerTypeEnum, config.CRAWLER_TYPE, CrawlerTypeEnum.SEARCH),
         start: Annotated[
             int,
             typer.Option(
                 "--start",
-                help="起始页码",
-                rich_help_panel="基础配置",
+                help="起始頁碼",
+                rich_help_panel="基礎配置",
             ),
         ] = config.START_PAGE,
         keywords: Annotated[
             str,
             typer.Option(
                 "--keywords",
-                help="请输入关键词，多个关键词用逗号分隔",
-                rich_help_panel="基础配置",
+                help="請輸入關鍵詞，多個關鍵詞用逗號分隔",
+                rich_help_panel="基礎配置",
             ),
         ] = config.KEYWORDS,
         get_comment: Annotated[
             str,
             typer.Option(
                 "--get_comment",
-                help="是否爬取一级评论，支持 yes/true/t/y/1 或 no/false/f/n/0",
-                rich_help_panel="评论配置",
+                help="是否爬取一級評論，支持 yes/true/t/y/1 或 no/false/f/n/0",
+                rich_help_panel="評論配置",
                 show_default=True,
             ),
         ] = str(config.ENABLE_GET_COMMENTS),
@@ -183,8 +183,8 @@ async def parse_cmd(argv: Optional[Sequence[str]] = None):
             str,
             typer.Option(
                 "--get_sub_comment",
-                help="是否爬取二级评论，支持 yes/true/t/y/1 或 no/false/f/n/0",
-                rich_help_panel="评论配置",
+                help="是否爬取二級評論，支持 yes/true/t/y/1 或 no/false/f/n/0",
+                rich_help_panel="評論配置",
                 show_default=True,
             ),
         ] = str(config.ENABLE_GET_SUB_COMMENTS),
@@ -192,8 +192,8 @@ async def parse_cmd(argv: Optional[Sequence[str]] = None):
             SaveDataOptionEnum,
             typer.Option(
                 "--save_data_option",
-                help="数据保存方式 (csv=CSV文件 | db=MySQL数据库 | json=JSON文件 | sqlite=SQLite数据库 | postgresql=PostgreSQL数据库)",
-                rich_help_panel="存储配置",
+                help="數據保存方式 (csv=CSV文件 | db=MySQL數據庫 | json=JSON文件 | sqlite=SQLite數據庫 | postgresql=PostgreSQL數據庫)",
+                rich_help_panel="存儲配置",
             ),
         ] = _coerce_enum(
             SaveDataOptionEnum, config.SAVE_DATA_OPTION, SaveDataOptionEnum.JSON
@@ -202,16 +202,16 @@ async def parse_cmd(argv: Optional[Sequence[str]] = None):
             Optional[InitDbOptionEnum],
             typer.Option(
                 "--init_db",
-                help="初始化数据库表结构 (sqlite | mysql | postgresql)",
-                rich_help_panel="存储配置",
+                help="初始化數據庫表結構 (sqlite | mysql | postgresql)",
+                rich_help_panel="存儲配置",
             ),
         ] = None,
         cookies: Annotated[
             str,
             typer.Option(
                 "--cookies",
-                help="Cookie 登录方式使用的 Cookie 值",
-                rich_help_panel="账号配置",
+                help="Cookie 登錄方式使用的 Cookie 值",
+                rich_help_panel="賬號配置",
             ),
         ] = config.COOKIES,
     ) -> SimpleNamespace:

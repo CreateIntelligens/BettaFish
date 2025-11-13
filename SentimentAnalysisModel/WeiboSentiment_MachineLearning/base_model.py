@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-基础模型类，为所有情感分析模型提供统一接口
+基礎模型類，爲所有情感分析模型提供統一接口
 """
 import os
 import pickle
@@ -12,7 +12,7 @@ from utils import load_corpus
 
 
 class BaseModel(ABC):
-    """情感分析模型基类"""
+    """情感分析模型基類"""
     
     def __init__(self, model_name: str):
         self.model_name = model_name
@@ -22,30 +22,30 @@ class BaseModel(ABC):
         
     @abstractmethod
     def train(self, train_data: List[Tuple[str, int]], **kwargs) -> None:
-        """训练模型"""
+        """訓練模型"""
         pass
     
     @abstractmethod
     def predict(self, texts: List[str]) -> List[int]:
-        """预测文本情感"""
+        """預測文本情感"""
         pass
     
     def predict_single(self, text: str) -> Tuple[int, float]:
-        """预测单条文本的情感
+        """預測單條文本的情感
         
         Args:
-            text: 待预测文本
+            text: 待預測文本
             
         Returns:
             (predicted_label, confidence)
         """
         predictions = self.predict([text])
-        return predictions[0], 0.0  # 默认置信度为0
+        return predictions[0], 0.0  # 默認置信度爲0
     
     def evaluate(self, test_data: List[Tuple[str, int]]) -> Dict[str, float]:
-        """评估模型性能"""
+        """評估模型性能"""
         if not self.is_trained:
-            raise ValueError(f"模型 {self.model_name} 尚未训练，请先调用train方法")
+            raise ValueError(f"模型 {self.model_name} 尚未訓練，請先調用train方法")
             
         texts = [item[0] for item in test_data]
         labels = [item[1] for item in test_data]
@@ -55,10 +55,10 @@ class BaseModel(ABC):
         accuracy = accuracy_score(labels, predictions)
         f1 = f1_score(labels, predictions, average='weighted')
         
-        print(f"\n{self.model_name} 模型评估结果:")
-        print(f"准确率: {accuracy:.4f}")
-        print(f"F1分数: {f1:.4f}")
-        print("\n详细报告:")
+        print(f"\n{self.model_name} 模型評估結果:")
+        print(f"準確率: {accuracy:.4f}")
+        print(f"F1分數: {f1:.4f}")
+        print("\n詳細報告:")
         print(classification_report(labels, predictions))
         
         return {
@@ -70,15 +70,15 @@ class BaseModel(ABC):
     def save_model(self, model_path: str = None) -> None:
         """保存模型到文件"""
         if not self.is_trained:
-            raise ValueError(f"模型 {self.model_name} 尚未训练，无法保存")
+            raise ValueError(f"模型 {self.model_name} 尚未訓練，無法保存")
             
         if model_path is None:
             model_path = f"model/{self.model_name}_model.pkl"
             
-        # 创建保存目录
+        # 創建保存目錄
         os.makedirs(os.path.dirname(model_path), exist_ok=True)
         
-        # 保存模型数据
+        # 保存模型數據
         model_data = {
             'model': self.model,
             'vectorizer': self.vectorizer,
@@ -92,7 +92,7 @@ class BaseModel(ABC):
         print(f"模型已保存到: {model_path}")
     
     def load_model(self, model_path: str) -> None:
-        """从文件加载模型"""
+        """從文件加載模型"""
         if not os.path.exists(model_path):
             raise FileNotFoundError(f"模型文件不存在: {model_path}")
             
@@ -104,17 +104,17 @@ class BaseModel(ABC):
         self.model_name = model_data['model_name']
         self.is_trained = model_data['is_trained']
         
-        print(f"已加载模型: {model_path}")
+        print(f"已加載模型: {model_path}")
     
     @staticmethod
     def load_data(train_path: str, test_path: str) -> Tuple[List[Tuple[str, int]], List[Tuple[str, int]]]:
-        """加载训练和测试数据"""
-        print("加载训练数据...")
+        """加載訓練和測試數據"""
+        print("加載訓練數據...")
         train_data = load_corpus(train_path)
-        print(f"训练数据量: {len(train_data)}")
+        print(f"訓練數據量: {len(train_data)}")
         
-        print("加载测试数据...")
+        print("加載測試數據...")
         test_data = load_corpus(test_path)
-        print(f"测试数据量: {len(test_data)}")
+        print(f"測試數據量: {len(test_data)}")
         
         return train_data, test_data

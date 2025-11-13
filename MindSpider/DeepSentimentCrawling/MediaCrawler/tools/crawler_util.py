@@ -1,18 +1,18 @@
-# 声明：本代码仅供学习和研究目的使用。使用者应遵守以下原则：  
-# 1. 不得用于任何商业用途。  
-# 2. 使用时应遵守目标平台的使用条款和robots.txt规则。  
-# 3. 不得进行大规模爬取或对平台造成运营干扰。  
-# 4. 应合理控制请求频率，避免给目标平台带来不必要的负担。   
-# 5. 不得用于任何非法或不当的用途。
+# 聲明：本代碼僅供學習和研究目的使用。使用者應遵守以下原則：  
+# 1. 不得用於任何商業用途。  
+# 2. 使用時應遵守目標平臺的使用條款和robots.txt規則。  
+# 3. 不得進行大規模爬取或對平臺造成運營幹擾。  
+# 4. 應合理控制請求頻率，避免給目標平臺帶來不必要的負擔。   
+# 5. 不得用於任何非法或不當的用途。
 #   
-# 详细许可条款请参阅项目根目录下的LICENSE文件。  
-# 使用本代码即表示您同意遵守上述原则和LICENSE中的所有条款。  
+# 詳細許可條款請參閱項目根目錄下的LICENSE文件。  
+# 使用本代碼即表示您同意遵守上述原則和LICENSE中的所有條款。  
 
 
 # -*- coding: utf-8 -*-
 # @Author  : relakkes@gmail.com
 # @Time    : 2023/12/2 12:53
-# @Desc    : 爬虫相关的工具函数
+# @Desc    : 爬蟲相關的工具函數
 
 import base64
 import json
@@ -64,13 +64,13 @@ async def find_qrcode_img_from_canvas(page: Page, canvas_selector: str) -> str:
 
     """
 
-    # 等待Canvas元素加载完成
+    # 等待Canvas元素加載完成
     canvas = await page.wait_for_selector(canvas_selector)
 
-    # 截取Canvas元素的截图
+    # 截取Canvas元素的截圖
     screenshot = await canvas.screenshot()
 
-    # 将截图转换为base64格式
+    # 將截圖轉換爲base64格式
     base64_image = base64.b64encode(screenshot).decode('utf-8')
     return base64_image
 
@@ -183,7 +183,7 @@ def format_proxy_info(ip_proxy_info) -> Tuple[Optional[Dict], Optional[str]]:
         "username": ip_proxy_info.user,
         "password": ip_proxy_info.password,
     }
-    # httpx 0.28.1 需要直接传入代理URL字符串，而不是字典
+    # httpx 0.28.1 需要直接傳入代理URL字符串，而不是字典
     if ip_proxy_info.user and ip_proxy_info.password:
         httpx_proxy = f"http://{ip_proxy_info.user}:{ip_proxy_info.password}@{ip_proxy_info.ip}:{ip_proxy_info.port}"
     else:

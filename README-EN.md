@@ -18,7 +18,7 @@
 [![Docker](https://img.shields.io/badge/Docker-Build-2496ED?style=flat-square&logo=docker&logoColor=white)](https://hub.docker.com/)
 
 
-[English](./README-EN.md) | [中文文档](./README.md)
+[English](./README-EN.md) | [中文文檔](./README.md)
 
 </div>
 
@@ -144,8 +144,8 @@ Weibo_PublicOpinion_AnalysisSystem/
 │   │   ├── template_selection.py  # Template selection node
 │   │   └── html_generation.py     # HTML generation node
 │   ├── report_template/           # Report template library
-│   │   ├── 社会公共热点事件分析.md
-│   │   ├── 商业品牌舆情监测.md
+│   │   ├── 社會公共熱點事件分析.md
+│   │   ├── 商業品牌輿情監測.md
 │   │   └── ...                    # More templates
 │   └── flask_interface.py         # Flask API interface
 ├── ForumEngine/                   # Forum engine simple implementation

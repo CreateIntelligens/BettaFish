@@ -1,6 +1,6 @@
 """
-Report Engine提示词模块
-定义报告生成各个阶段使用的系统提示词
+Report Engine提示詞模塊
+定義報告生成各個階段使用的系統提示詞
 """
 
 from .prompts import (

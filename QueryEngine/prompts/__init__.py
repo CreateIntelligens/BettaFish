@@ -1,6 +1,6 @@
 """
-Prompt模块
-定义Deep Search Agent各个阶段使用的系统提示词
+Prompt模塊
+定義Deep Search Agent各個階段使用的系統提示詞
 """
 
 from .prompts import (

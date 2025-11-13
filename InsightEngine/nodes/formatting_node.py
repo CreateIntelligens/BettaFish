@@ -1,6 +1,6 @@
 """
-报告格式化节点
-负责将最终研究结果格式化为美观的Markdown报告
+報告格式化節點
+負責將最終研究結果格式化爲美觀的Markdown報告
 """
 
 import json
@@ -18,19 +18,19 @@ from ..utils.text_processing import (
 
 
 class ReportFormattingNode(BaseNode):
-    """格式化最终报告的节点"""
+    """格式化最終報告的節點"""
     
     def __init__(self, llm_client):
         """
-        初始化报告格式化节点
+        初始化報告格式化節點
         
         Args:
-            llm_client: LLM客户端
+            llm_client: LLM客戶端
         """
         super().__init__(llm_client, "ReportFormattingNode")
     
     def validate_input(self, input_data: Any) -> bool:
-        """验证输入数据"""
+        """驗證輸入數據"""
         if isinstance(input_data, str):
             try:
                 data = json.loads(input_data)
@@ -49,88 +49,88 @@ class ReportFormattingNode(BaseNode):
     
     def run(self, input_data: Any, **kwargs) -> str:
         """
-        调用LLM生成Markdown格式报告
+        調用LLM生成Markdown格式報告
         
         Args:
             input_data: 包含所有段落信息的列表
-            **kwargs: 额外参数
+            **kwargs: 額外參數
             
         Returns:
-            格式化的Markdown报告
+            格式化的Markdown報告
         """
         try:
             if not self.validate_input(input_data):
-                raise ValueError("输入数据格式错误，需要包含title和paragraph_latest_state的列表")
+                raise ValueError("輸入數據格式錯誤，需要包含title和paragraph_latest_state的列表")
             
-            # 准备输入数据
+            # 準備輸入數據
             if isinstance(input_data, str):
                 message = input_data
             else:
                 message = json.dumps(input_data, ensure_ascii=False)
             
-            logger.info("正在格式化最终报告")
+            logger.info("正在格式化最終報告")
             
-            # 调用LLM
+            # 調用LLM
             response = self.llm_client.invoke(
                 SYSTEM_PROMPT_REPORT_FORMATTING,
                 message,
             )
             
-            # 处理响应
+            # 處理響應
             processed_response = self.process_output(response)
             
-            logger.info("成功生成格式化报告")
+            logger.info("成功生成格式化報告")
             return processed_response
             
         except Exception as e:
-            logger.exception(f"报告格式化失败: {str(e)}")
+            logger.exception(f"報告格式化失敗: {str(e)}")
             raise e
     
     def process_output(self, output: str) -> str:
         """
-        处理LLM输出，清理Markdown格式
+        處理LLM輸出，清理Markdown格式
         
         Args:
-            output: LLM原始输出
+            output: LLM原始輸出
             
         Returns:
-            清理后的Markdown报告
+            清理後的Markdown報告
         """
         try:
-            # 清理响应文本
+            # 清理響應文本
             cleaned_output = remove_reasoning_from_output(output)
             cleaned_output = clean_markdown_tags(cleaned_output)
             
-            # 确保报告有基本结构
+            # 確保報告有基本結構
             if not cleaned_output.strip():
-                return "# 报告生成失败\n\n无法生成有效的报告内容。"
+                return "# 報告生成失敗\n\n無法生成有效的報告內容。"
             
-            # 如果没有标题，添加一个默认标题
+            # 如果沒有標題，添加一個默認標題
             if not cleaned_output.strip().startswith('#'):
-                cleaned_output = "# 深度研究报告\n\n" + cleaned_output
+                cleaned_output = "# 深度研究報告\n\n" + cleaned_output
             
             return cleaned_output.strip()
             
         except Exception as e:
-            logger.exception(f"处理输出失败: {str(e)}")
-            return "# 报告处理失败\n\n报告格式化过程中发生错误。"
+            logger.exception(f"處理輸出失敗: {str(e)}")
+            return "# 報告處理失敗\n\n報告格式化過程中發生錯誤。"
     
     def format_report_manually(self, paragraphs_data: List[Dict[str, str]], 
-                             report_title: str = "深度研究报告") -> str:
+                             report_title: str = "深度研究報告") -> str:
         """
-        手动格式化报告（备用方法）
+        手動格式化報告（備用方法）
         
         Args:
-            paragraphs_data: 段落数据列表
-            report_title: 报告标题
+            paragraphs_data: 段落數據列表
+            report_title: 報告標題
             
         Returns:
-            格式化的Markdown报告
+            格式化的Markdown報告
         """
         try:
-            logger.info("使用手动格式化方法")
+            logger.info("使用手動格式化方法")
             
-            # 构建报告
+            # 構建報告
             report_lines = [
                 f"# {report_title}",
                 "",
@@ -138,7 +138,7 @@ class ReportFormattingNode(BaseNode):
                 ""
             ]
             
-            # 添加各个段落
+            # 添加各個段落
             for i, paragraph in enumerate(paragraphs_data, 1):
                 title = paragraph.get("title", f"段落 {i}")
                 content = paragraph.get("paragraph_latest_state", "")
@@ -153,18 +153,18 @@ class ReportFormattingNode(BaseNode):
                         ""
                     ])
             
-            # 添加结论
+            # 添加結論
             if len(paragraphs_data) > 1:
                 report_lines.extend([
-                    "## 结论",
+                    "## 結論",
                     "",
-                    "本报告通过深度搜索和研究，对相关主题进行了全面分析。"
-                    "以上各个方面的内容为理解该主题提供了重要参考。",
+                    "本報告通過深度搜索和研究，對相關主題進行了全面分析。"
+                    "以上各個方面的內容爲理解該主題提供了重要參考。",
                     ""
                 ])
             
             return "\n".join(report_lines)
             
         except Exception as e:
-            logger.exception(f"手动格式化失败: {str(e)}")
-            return "# 报告生成失败\n\n无法完成报告格式化。"
+            logger.exception(f"手動格式化失敗: {str(e)}")
+            return "# 報告生成失敗\n\n無法完成報告格式化。"

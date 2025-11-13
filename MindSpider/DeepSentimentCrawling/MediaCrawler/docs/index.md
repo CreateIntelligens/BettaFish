@@ -1,77 +1,77 @@
 # MediaCrawler使用方法
 
-## 创建并激活 python 虚拟环境
-> 如果是爬取抖音和知乎，需要提前安装nodejs环境，版本大于等于：`16`即可 <br>
+## 創建並激活 python 虛擬環境
+> 如果是爬取抖音和知乎，需要提前安裝nodejs環境，版本大於等於：`16`即可 <br>
    ```shell   
-   # 进入项目根目录
+   # 進入項目根目錄
    cd MediaCrawler
    
-   # 创建虚拟环境
-   # 我的python版本是：3.9.6，requirements.txt中的库是基于这个版本的，如果是其他python版本，可能requirements.txt中的库不兼容，自行解决一下。
+   # 創建虛擬環境
+   # 我的python版本是：3.9.6，requirements.txt中的庫是基於這個版本的，如果是其他python版本，可能requirements.txt中的庫不兼容，自行解決一下。
    python -m venv venv
    
-   # macos & linux 激活虚拟环境
+   # macos & linux 激活虛擬環境
    source venv/bin/activate
 
-   # windows 激活虚拟环境
+   # windows 激活虛擬環境
    venv\Scripts\activate
 
    ```
 
-## 安装依赖库
+## 安裝依賴庫
 
    ```shell
    pip install -r requirements.txt
    ```
 
-## 安装 playwright浏览器驱动
+## 安裝 playwright瀏覽器驅動
 
    ```shell
    playwright install
    ```
 
-## 运行爬虫程序
+## 運行爬蟲程序
 
    ```shell
-   ### 项目默认是没有开启评论爬取模式，如需评论请在config/base_config.py中的 ENABLE_GET_COMMENTS 变量修改
-   ### 一些其他支持项，也可以在config/base_config.py查看功能，写的有中文注释
+   ### 項目默認是沒有開啓評論爬取模式，如需評論請在config/base_config.py中的 ENABLE_GET_COMMENTS 變量修改
+   ### 一些其他支持項，也可以在config/base_config.py查看功能，寫的有中文註釋
    
-   # 从配置文件中读取关键词搜索相关的帖子并爬取帖子信息与评论
+   # 從配置文件中讀取關鍵詞搜索相關的帖子並爬取帖子信息與評論
    python main.py --platform xhs --lt qrcode --type search
    
-   # 从配置文件中读取指定的帖子ID列表获取指定帖子的信息与评论信息
+   # 從配置文件中讀取指定的帖子ID列表獲取指定帖子的信息與評論信息
    python main.py --platform xhs --lt qrcode --type detail
    
-   # 使用SQLite数据库存储数据（推荐个人用户使用）
+   # 使用SQLite數據庫存儲數據（推薦個人用戶使用）
    python main.py --platform xhs --lt qrcode --type search --save_data_option sqlite
    
-   # 使用MySQL数据库存储数据
+   # 使用MySQL數據庫存儲數據
    python main.py --platform xhs --lt qrcode --type search --save_data_option db
   
-   # 打开对应APP扫二维码登录
+   # 打開對應APP掃二維碼登錄
      
-   # 其他平台爬虫使用示例，执行下面的命令查看
+   # 其他平臺爬蟲使用示例，執行下面的命令查看
    python main.py --help    
    ```
 
-## 💾 数据存储
+## 💾 數據存儲
 
-支持多种数据存储方式：
-- **CSV 文件**: 支持保存至 CSV (位于 `data/` 目录下)
-- **JSON 文件**: 支持保存至 JSON (位于 `data/` 目录下)
-- **数据库存储**
-  - 使用 `--init_db` 参数进行数据库初始化 (使用 `--init_db` 时，无需其他可选参数)
-  - **SQLite 数据库**: 轻量级数据库，无需服务器，适合个人使用 (推荐)
+支持多種數據存儲方式：
+- **CSV 文件**: 支持保存至 CSV (位於 `data/` 目錄下)
+- **JSON 文件**: 支持保存至 JSON (位於 `data/` 目錄下)
+- **數據庫存儲**
+  - 使用 `--init_db` 參數進行數據庫初始化 (使用 `--init_db` 時，無需其他可選參數)
+  - **SQLite 數據庫**: 輕量級數據庫，無需服務器，適合個人使用 (推薦)
     1. 初始化: `--init_db sqlite`
-    2. 数据存储: `--save_data_option sqlite`
-  - **MySQL 数据库**: 支持保存至关系型数据库 MySQL (需提前创建数据库)
+    2. 數據存儲: `--save_data_option sqlite`
+  - **MySQL 數據庫**: 支持保存至關係型數據庫 MySQL (需提前創建數據庫)
     1. 初始化: `--init_db mysql`
-    2. 数据存储: `--save_data_option db` (db 参数为兼容历史更新保留)
+    2. 數據存儲: `--save_data_option db` (db 參數爲兼容歷史更新保留)
 
-## 免责声明
-> **免责声明：**
+## 免責聲明
+> **免責聲明：**
 > 
-> 大家请以学习为目的使用本仓库，爬虫违法违规的案件：https://github.com/HiddenStrawberry/Crawler_Illegal_Cases_In_China  <br>
+> 大家請以學習爲目的使用本倉庫，爬蟲違法違規的案件：https://github.com/HiddenStrawberry/Crawler_Illegal_Cases_In_China  <br>
 >
->本项目的所有内容仅供学习和参考之用，禁止用于商业用途。任何人或组织不得将本仓库的内容用于非法用途或侵犯他人合法权益。本仓库所涉及的爬虫技术仅用于学习和研究，不得用于对其他平台进行大规模爬虫或其他非法行为。对于因使用本仓库内容而引起的任何法律责任，本仓库不承担任何责任。使用本仓库的内容即表示您同意本免责声明的所有条款和条件。
+>本項目的所有內容僅供學習和參考之用，禁止用於商業用途。任何人或組織不得將本倉庫的內容用於非法用途或侵犯他人合法權益。本倉庫所涉及的爬蟲技術僅用於學習和研究，不得用於對其他平臺進行大規模爬蟲或其他非法行爲。對於因使用本倉庫內容而引起的任何法律責任，本倉庫不承擔任何責任。使用本倉庫的內容即表示您同意本免責聲明的所有條款和條件。
 

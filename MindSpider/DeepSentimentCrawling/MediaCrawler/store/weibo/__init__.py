@@ -1,12 +1,12 @@
-# 声明：本代码仅供学习和研究目的使用。使用者应遵守以下原则：
-# 1. 不得用于任何商业用途。
-# 2. 使用时应遵守目标平台的使用条款和robots.txt规则。
-# 3. 不得进行大规模爬取或对平台造成运营干扰。
-# 4. 应合理控制请求频率，避免给目标平台带来不必要的负担。
-# 5. 不得用于任何非法或不当的用途。
+# 聲明：本代碼僅供學習和研究目的使用。使用者應遵守以下原則：
+# 1. 不得用於任何商業用途。
+# 2. 使用時應遵守目標平臺的使用條款和robots.txt規則。
+# 3. 不得進行大規模爬取或對平臺造成運營幹擾。
+# 4. 應合理控制請求頻率，避免給目標平臺帶來不必要的負擔。
+# 5. 不得用於任何非法或不當的用途。
 #
-# 详细许可条款请参阅项目根目录下的LICENSE文件。
-# 使用本代码即表示您同意遵守上述原则和LICENSE中的所有条款。
+# 詳細許可條款請參閱項目根目錄下的LICENSE文件。
+# 使用本代碼即表示您同意遵守上述原則和LICENSE中的所有條款。
 
 # -*- coding: utf-8 -*-
 # @Author  : relakkes@gmail.com
@@ -82,9 +82,9 @@ async def update_weibo_note(note_item: Dict):
         "shared_count": str(mblog.get("reposts_count", 0)),
         "last_modify_ts": utils.get_current_timestamp(),
         "note_url": f"https://m.weibo.cn/detail/{note_id}",
-        "ip_location": mblog.get("region_name", "").replace("发布于 ", ""),
+        "ip_location": mblog.get("region_name", "").replace("發佈於 ", ""),
 
-        # 用户信息
+        # 用戶信息
         "user_id": str(user_info.get("id")),
         "nickname": user_info.get("screen_name", ""),
         "gender": user_info.get("gender", ""),
@@ -137,10 +137,10 @@ async def update_weibo_note_comment(note_id: str, comment_item: Dict):
         "sub_comment_count": str(comment_item.get("total_number", 0)),
         "comment_like_count": str(comment_item.get("like_count", 0)),
         "last_modify_ts": utils.get_current_timestamp(),
-        "ip_location": comment_item.get("source", "").replace("来自", ""),
+        "ip_location": comment_item.get("source", "").replace("來自", ""),
         "parent_comment_id": comment_item.get("rootid", ""),
 
-        # 用户信息
+        # 用戶信息
         "user_id": str(user_info.get("id")),
         "nickname": user_info.get("screen_name", ""),
         "gender": user_info.get("gender", ""),
@@ -181,7 +181,7 @@ async def save_creator(user_id: str, user_info: Dict):
         'gender': '女' if user_info.get('gender') == "f" else '男',
         'avatar': user_info.get('avatar_hd'),
         'desc': user_info.get('description'),
-        'ip_location': user_info.get("source", "").replace("来自", ""),
+        'ip_location': user_info.get("source", "").replace("來自", ""),
         'follows': user_info.get('follow_count', ''),
         'fans': user_info.get('followers_count', ''),
         'tag_list': '',

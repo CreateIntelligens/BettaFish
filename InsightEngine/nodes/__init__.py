@@ -1,6 +1,6 @@
 """
-节点处理模块
-实现Deep Search Agent的各个处理步骤
+節點處理模塊
+實現Deep Search Agent的各個處理步驟
 """
 
 from .base_node import BaseNode

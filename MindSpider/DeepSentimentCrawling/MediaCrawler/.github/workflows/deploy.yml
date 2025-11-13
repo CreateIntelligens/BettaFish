@@ -1,39 +1,39 @@
-# 构建 VitePress 站点并将其部署到 GitHub Pages 的示例工作流程
+# 構建 VitePress 站點並將其部署到 GitHub Pages 的示例工作流程
 #
 name: Deploy VitePress site to Pages
 
 on:
-  # 在针对 `main` 分支的推送上运行。如果你
-  # 使用 `master` 分支作为默认分支，请将其更改为 `master`
+  # 在針對 `main` 分支的推送上運行。如果你
+  # 使用 `master` 分支作爲默認分支，請將其更改爲 `master`
   push:
     branches: [main]
 
-  # 允许你从 Actions 选项卡手动运行此工作流程
+  # 允許你從 Actions 選項卡手動運行此工作流程
   workflow_dispatch:
 
-# 设置 GITHUB_TOKEN 的权限，以允许部署到 GitHub Pages
+# 設置 GITHUB_TOKEN 的權限，以允許部署到 GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# 只允许同时进行一次部署，跳过正在运行和最新队列之间的运行队列
-# 但是，不要取消正在进行的运行，因为我们希望允许这些生产部署完成
+# 只允許同時進行一次部署，跳過正在運行和最新隊列之間的運行隊列
+# 但是，不要取消正在進行的運行，因爲我們希望允許這些生產部署完成
 concurrency:
   group: pages
   cancel-in-progress: false
 
 jobs:
-  # 构建工作
+  # 構建工作
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # 如果未启用 lastUpdated，则不需要
-      # - uses: pnpm/action-setup@v3 # 如果使用 pnpm，请取消注释
-      # - uses: oven-sh/setup-bun@v1 # 如果使用 Bun，请取消注释
+          fetch-depth: 0 # 如果未啓用 lastUpdated，則不需要
+      # - uses: pnpm/action-setup@v3 # 如果使用 pnpm，請取消註釋
+      # - uses: oven-sh/setup-bun@v1 # 如果使用 Bun，請取消註釋
       - name: Setup Node
         uses: actions/setup-node@v4
         with:

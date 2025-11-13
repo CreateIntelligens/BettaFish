@@ -1,17 +1,17 @@
-# 声明：本代码仅供学习和研究目的使用。使用者应遵守以下原则：
-# 1. 不得用于任何商业用途。
-# 2. 使用时应遵守目标平台的使用条款和robots.txt规则。
-# 3. 不得进行大规模爬取或对平台造成运营干扰。
-# 4. 应合理控制请求频率，避免给目标平台带来不必要的负担。
-# 5. 不得用于任何非法或不当的用途。
+# 聲明：本代碼僅供學習和研究目的使用。使用者應遵守以下原則：
+# 1. 不得用於任何商業用途。
+# 2. 使用時應遵守目標平臺的使用條款和robots.txt規則。
+# 3. 不得進行大規模爬取或對平臺造成運營幹擾。
+# 4. 應合理控制請求頻率，避免給目標平臺帶來不必要的負擔。
+# 5. 不得用於任何非法或不當的用途。
 #
-# 详细许可条款请参阅项目根目录下的LICENSE文件。
-# 使用本代码即表示您同意遵守上述原则和LICENSE中的所有条款。
+# 詳細許可條款請參閱項目根目錄下的LICENSE文件。
+# 使用本代碼即表示您同意遵守上述原則和LICENSE中的所有條款。
 
 # -*- coding: utf-8 -*-
 # @Author  : relakkes@gmail.com
 # @Time    : 2023/12/23 15:40
-# @Desc    : 微博爬虫 API 请求 client
+# @Desc    : 微博爬蟲 API 請求 client
 
 import asyncio
 import copy
@@ -35,7 +35,7 @@ class WeiboClient:
 
     def __init__(
         self,
-        timeout=60,  # 若开启爬取媒体选项，weibo 的图片需要更久的超时时间
+        timeout=60,  # 若開啓爬取媒體選項，weibo 的圖片需要更久的超時時間
         proxy=None,
         *,
         headers: Dict[str, str],
@@ -112,9 +112,9 @@ class WeiboClient:
     ) -> Dict:
         """
         search note by keyword
-        :param keyword: 微博搜搜的关键词
-        :param page: 分页参数 -当前页码
-        :param search_type: 搜索的类型，见 weibo/filed.py 中的枚举SearchType
+        :param keyword: 微博搜搜的關鍵詞
+        :param page: 分頁參數 -當前頁碼
+        :param search_type: 搜索的類型，見 weibo/filed.py 中的枚舉SearchType
         :return:
         """
         uri = "/api/container/getIndex"
@@ -129,8 +129,8 @@ class WeiboClient:
     async def get_note_comments(self, mid_id: str, max_id: int, max_id_type: int = 0) -> Dict:
         """get notes comments
         :param mid_id: 微博ID
-        :param max_id: 分页参数ID
-        :param max_id_type: 分页参数ID类型
+        :param max_id: 分頁參數ID
+        :param max_id_type: 分頁參數ID類型
         :return:
         """
         uri = "/comments/hotflow"
@@ -174,7 +174,7 @@ class WeiboClient:
             is_end = max_id == 0
             if len(result) + len(comment_list) > max_count:
                 comment_list = comment_list[:max_count - len(result)]
-            if callback:  # 如果有回调函数，就执行回调函数
+            if callback:  # 如果有回調函數，就執行回調函數
                 await callback(note_id, comment_list)
             await asyncio.sleep(crawl_interval)
             result.extend(comment_list)
@@ -189,7 +189,7 @@ class WeiboClient:
         callback: Optional[Callable] = None,
     ) -> List[Dict]:
         """
-        获取评论的所有子评论
+        獲取評論的所有子評論
         Args:
             note_id:
             comment_list:
@@ -212,7 +212,7 @@ class WeiboClient:
 
     async def get_note_info_by_id(self, note_id: str) -> Dict:
         """
-        根据帖子ID获取详情
+        根據帖子ID獲取詳情
         :param note_id:
         :return:
         """
@@ -238,13 +238,13 @@ class WeiboClient:
         image_url = ""
         for i in range(len(sub_url)):
             if i == 1:
-                image_url += "large/"  # 都获取高清大图
+                image_url += "large/"  # 都獲取高清大圖
             elif i == len(sub_url) - 1:
                 image_url += sub_url[i]
             else:
                 image_url += sub_url[i] + "/"
-        # 微博图床对外存在防盗链，所以需要代理访问
-        # 由于微博图片是通过 i1.wp.com 来访问的，所以需要拼接一下
+        # 微博圖牀對外存在防盜鏈，所以需要代理訪問
+        # 由於微博圖片是通過 i1.wp.com 來訪問的，所以需要拼接一下
         final_uri = (f"{self._image_agent_host}"
                      f"{image_url}")
         async with httpx.AsyncClient(proxy=self.proxy) as client:
@@ -257,14 +257,14 @@ class WeiboClient:
                 else:
                     return response.content
             except httpx.HTTPError as exc:  # some wrong when call httpx.request method, such as connection error, client error, server error or response status code is not 2xx
-                utils.logger.error(f"[DouYinClient.get_aweme_media] {exc.__class__.__name__} for {exc.request.url} - {exc}")    # 保留原始异常类型名称，以便开发者调试
+                utils.logger.error(f"[DouYinClient.get_aweme_media] {exc.__class__.__name__} for {exc.request.url} - {exc}")    # 保留原始異常類型名稱，以便開發者調試
                 return None
 
     async def get_creator_container_info(self, creator_id: str) -> Dict:
         """
-        获取用户的容器ID, 容器信息代表着真实请求的API路径
-            fid_container_id：用户的微博详情API的容器ID
-            lfid_container_id：用户的微博列表API的容器ID
+        獲取用戶的容器ID, 容器信息代表着真實請求的API路徑
+            fid_container_id：用戶的微博詳情API的容器ID
+            lfid_container_id：用戶的微博列表API的容器ID
         Args:
             creator_id:
 
@@ -280,7 +280,7 @@ class WeiboClient:
 
     async def get_creator_info_by_id(self, creator_id: str) -> Dict:
         """
-        根据用户ID获取用户详情
+        根據用戶ID獲取用戶詳情
         Args:
             creator_id:
 
@@ -318,11 +318,11 @@ class WeiboClient:
         since_id: str = "0",
     ) -> Dict:
         """
-        获取博主的笔记
+        獲取博主的筆記
         Args:
             creator: 博主ID
             container_id: 容器ID
-            since_id: 上一页最后一条笔记的ID
+            since_id: 上一頁最後一條筆記的ID
         Returns:
 
         """
@@ -345,7 +345,7 @@ class WeiboClient:
         callback: Optional[Callable] = None,
     ) -> List[Dict]:
         """
-        获取指定用户下的所有发过的帖子，该方法会一直查找一个用户下的所有帖子信息
+        獲取指定用戶下的所有發過的帖子，該方法會一直查找一個用戶下的所有帖子信息
         Args:
             creator_id:
             container_id:

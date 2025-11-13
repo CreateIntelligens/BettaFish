@@ -1,45 +1,45 @@
-# 订阅MediaCrawlerPro版本源码访问权限
+# 訂閱MediaCrawlerPro版本源碼訪問權限
 
-## 获取Pro版本的访问权限
-> MediaCrawler开源超过一年了，相信该仓库帮过不少朋友低门槛的学习和了解爬虫。维护真的耗费了大量精力和人力 <br>
+## 獲取Pro版本的訪問權限
+> MediaCrawler開源超過一年了，相信該倉庫幫過不少朋友低門檻的學習和了解爬蟲。維護真的耗費了大量精力和人力 <br>
 > 
-> 所以Pro版本不会开源，可以订阅Pro版本让我更加有动力去更新。<br>
+> 所以Pro版本不會開源，可以訂閱Pro版本讓我更加有動力去更新。<br>
 > 
-> 如果感兴趣可以加我微信，订阅Pro版本访问权限哦，有门槛💰。<br>
+> 如果感興趣可以加我微信，訂閱Pro版本訪問權限哦，有門檻💰。<br>
 > 
-> 仅针对想学习Pro版本源码实现的用户，如果是公司或者商业化盈利性质的就不要加我了，谢谢🙏
+> 僅針對想學習Pro版本源碼實現的用戶，如果是公司或者商業化盈利性質的就不要加我了，謝謝🙏
 > 
-> 代码设计拓展性强，可以自己扩展更多的爬虫平台，更多的数据存储方式，相信对你架构这种爬虫代码有所帮助。
+> 代碼設計拓展性強，可以自己擴展更多的爬蟲平臺，更多的數據存儲方式，相信對你架構這種爬蟲代碼有所幫助。
 > 
 > 
-> **MediaCrawlerPro项目主页地址**
-> [MediaCrawlerPro Github主页地址](https://github.com/MediaCrawlerPro)
+> **MediaCrawlerPro項目主頁地址**
+> [MediaCrawlerPro Github主頁地址](https://github.com/MediaCrawlerPro)
 
 
 
-扫描下方我的个人微信，备注：pro版本（如果图片展示不出来，可以直接添加我的微信号：relakkes）
+掃描下方我的個人微信，備註：pro版本（如果圖片展示不出來，可以直接添加我的微信號：relakkes）
 
 ![relakkes_weichat.JPG](static/images/relakkes_weichat.jpg)
 
 
-##  Pro版本诞生的背景
-[MediaCrawler](https://github.com/NanmiCoder/MediaCrawler)这个项目开源至今获得了大量的关注，同时也暴露出来了一系列问题，比如：
-- 能否支持多账号？
+##  Pro版本誕生的背景
+[MediaCrawler](https://github.com/NanmiCoder/MediaCrawler)這個項目開源至今獲得了大量的關注，同時也暴露出來了一系列問題，比如：
+- 能否支持多賬號？
 - 能否在linux部署？
-- 能否去掉playwright的依赖？
-- 有没有更简单的部署方法？
-- 有没有针对新手上门槛更低的方法？
+- 能否去掉playwright的依賴？
+- 有沒有更簡單的部署方法？
+- 有沒有針對新手上門檻更低的方法？
 
-诸如上面的此类问题，想要在原有项目上去动刀，无疑是增加了复杂度，可能导致后续的维护更加困难。
-出于可持续维护、简便易用、部署简单等目的，对MediaCrawler进行彻底重构。
+諸如上面的此類問題，想要在原有項目上去動刀，無疑是增加了複雜度，可能導致後續的維護更加困難。
+出於可持續維護、簡便易用、部署簡單等目的，對MediaCrawler進行徹底重構。
 
-## 项目介绍
-### [MediaCrawler](https://github.com/NanmiCoder/MediaCrawler)的Pro版本python实现
-**小红书爬虫**，**抖音爬虫**， **快手爬虫**， **B站爬虫**， **微博爬虫**，**百度贴吧**，**知乎爬虫**...。
+## 項目介紹
+### [MediaCrawler](https://github.com/NanmiCoder/MediaCrawler)的Pro版本python實現
+**小紅書爬蟲**，**抖音爬蟲**， **快手爬蟲**， **B站爬蟲**， **微博爬蟲**，**百度貼吧**，**知乎爬蟲**...。
 
-支持多种平台的爬虫，支持多种数据的爬取，支持多种数据的存储，最重要的**完美支持多账号+IP代理池，让你的爬虫更加稳定**。
-相较于MediaCrawler，Pro版本最大的变化：
-- 去掉了playwright的依赖，不再将Playwright集成到爬虫主干中，依赖过重。
-- 增加了Docker，Docker-compose的方式部署，让部署更加简单。
-- 多账号+IP代理池的支持，让爬虫更加稳定。
-- 新增签名服务，解耦签名逻辑，让爬虫更加灵活。
+支持多種平臺的爬蟲，支持多種數據的爬取，支持多種數據的存儲，最重要的**完美支持多賬號+IP代理池，讓你的爬蟲更加穩定**。
+相較於MediaCrawler，Pro版本最大的變化：
+- 去掉了playwright的依賴，不再將Playwright集成到爬蟲主幹中，依賴過重。
+- 增加了Docker，Docker-compose的方式部署，讓部署更加簡單。
+- 多賬號+IP代理池的支持，讓爬蟲更加穩定。
+- 新增簽名服務，解耦簽名邏輯，讓爬蟲更加靈活。

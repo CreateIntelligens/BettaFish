@@ -1,17 +1,17 @@
-# 声明：本代码仅供学习和研究目的使用。使用者应遵守以下原则：
-# 1. 不得用于任何商业用途。
-# 2. 使用时应遵守目标平台的使用条款和robots.txt规则。
-# 3. 不得进行大规模爬取或对平台造成运营干扰。
-# 4. 应合理控制请求频率，避免给目标平台带来不必要的负担。
-# 5. 不得用于任何非法或不当的用途。
+# 聲明：本代碼僅供學習和研究目的使用。使用者應遵守以下原則：
+# 1. 不得用於任何商業用途。
+# 2. 使用時應遵守目標平臺的使用條款和robots.txt規則。
+# 3. 不得進行大規模爬取或對平臺造成運營幹擾。
+# 4. 應合理控制請求頻率，避免給目標平臺帶來不必要的負擔。
+# 5. 不得用於任何非法或不當的用途。
 #
-# 详细许可条款请参阅项目根目录下的LICENSE文件。
-# 使用本代码即表示您同意遵守上述原则和LICENSE中的所有条款。
+# 詳細許可條款請參閱項目根目錄下的LICENSE文件。
+# 使用本代碼即表示您同意遵守上述原則和LICENSE中的所有條款。
 
 # -*- coding: utf-8 -*-
 # @Author  : relakkes@gmail.com
 # @Time    : 2023/12/23 15:41
-# @Desc    : 微博爬虫主流程代码
+# @Desc    : 微博爬蟲主流程代碼
 
 import asyncio
 import os
@@ -63,9 +63,9 @@ class WeiboCrawler(AbstractCrawler):
             playwright_proxy_format, httpx_proxy_format = utils.format_proxy_info(ip_proxy_info)
 
         async with async_playwright() as playwright:
-            # 根据配置选择启动模式
+            # 根據配置選擇啓動模式
             if config.ENABLE_CDP_MODE:
-                utils.logger.info("[WeiboCrawler] 使用CDP模式启动浏览器")
+                utils.logger.info("[WeiboCrawler] 使用CDP模式啓動瀏覽器")
                 self.browser_context = await self.launch_browser_with_cdp(
                     playwright,
                     playwright_proxy_format,
@@ -73,7 +73,7 @@ class WeiboCrawler(AbstractCrawler):
                     headless=config.CDP_HEADLESS,
                 )
             else:
-                utils.logger.info("[WeiboCrawler] 使用标准模式启动浏览器")
+                utils.logger.info("[WeiboCrawler] 使用標準模式啓動瀏覽器")
                 # Launch a browser context.
                 chromium = playwright.chromium
                 self.browser_context = await self.launch_browser(chromium, None, self.mobile_user_agent, headless=config.HEADLESS)
@@ -97,7 +97,7 @@ class WeiboCrawler(AbstractCrawler):
                 )
                 await login_obj.begin()
 
-                # 登录成功后重定向到手机端的网站，再更新手机端登录成功的cookie
+                # 登錄成功後重定向到手機端的網站，再更新手機端登錄成功的cookie
                 utils.logger.info("[WeiboCrawler.start] redirect weibo mobile homepage and update cookies on mobile platform")
                 await self.context_page.goto(self.mobile_index_url)
                 await asyncio.sleep(2)
@@ -358,7 +358,7 @@ class WeiboCrawler(AbstractCrawler):
         headless: bool = True,
     ) -> BrowserContext:
         """
-        使用CDP模式启动浏览器
+        使用CDP模式啓動瀏覽器
         """
         try:
             self.cdp_manager = CDPBrowserManager()
@@ -369,21 +369,21 @@ class WeiboCrawler(AbstractCrawler):
                 headless=headless,
             )
 
-            # 显示浏览器信息
+            # 顯示瀏覽器信息
             browser_info = await self.cdp_manager.get_browser_info()
-            utils.logger.info(f"[WeiboCrawler] CDP浏览器信息: {browser_info}")
+            utils.logger.info(f"[WeiboCrawler] CDP瀏覽器信息: {browser_info}")
 
             return browser_context
 
         except Exception as e:
-            utils.logger.error(f"[WeiboCrawler] CDP模式启动失败，回退到标准模式: {e}")
-            # 回退到标准模式
+            utils.logger.error(f"[WeiboCrawler] CDP模式啓動失敗，回退到標準模式: {e}")
+            # 回退到標準模式
             chromium = playwright.chromium
             return await self.launch_browser(chromium, playwright_proxy, user_agent, headless)
 
     async def close(self):
         """Close browser context"""
-        # 如果使用CDP模式，需要特殊处理
+        # 如果使用CDP模式，需要特殊處理
         if self.cdp_manager:
             await self.cdp_manager.cleanup()
             self.cdp_manager = None

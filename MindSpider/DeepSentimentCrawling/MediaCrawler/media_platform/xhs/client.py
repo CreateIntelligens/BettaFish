@@ -1,12 +1,12 @@
-# 声明：本代码仅供学习和研究目的使用。使用者应遵守以下原则：
-# 1. 不得用于任何商业用途。
-# 2. 使用时应遵守目标平台的使用条款和robots.txt规则。
-# 3. 不得进行大规模爬取或对平台造成运营干扰。
-# 4. 应合理控制请求频率，避免给目标平台带来不必要的负担。
-# 5. 不得用于任何非法或不当的用途。
+# 聲明：本代碼僅供學習和研究目的使用。使用者應遵守以下原則：
+# 1. 不得用於任何商業用途。
+# 2. 使用時應遵守目標平臺的使用條款和robots.txt規則。
+# 3. 不得進行大規模爬取或對平臺造成運營幹擾。
+# 4. 應合理控制請求頻率，避免給目標平臺帶來不必要的負擔。
+# 5. 不得用於任何非法或不當的用途。
 #
-# 详细许可条款请参阅项目根目录下的LICENSE文件。
-# 使用本代码即表示您同意遵守上述原则和LICENSE中的所有条款。
+# 詳細許可條款請參閱項目根目錄下的LICENSE文件。
+# 使用本代碼即表示您同意遵守上述原則和LICENSE中的所有條款。
 
 import asyncio
 import json
@@ -34,7 +34,7 @@ class XiaoHongShuClient(AbstractApiClient):
 
     def __init__(
         self,
-        timeout=60,  # 若开启爬取媒体选项，xhs 的长视频需要更久的超时时间
+        timeout=60,  # 若開啓爬取媒體選項，xhs 的長視頻需要更久的超時時間
         proxy=None,
         *,
         headers: Dict[str, str],
@@ -46,9 +46,9 @@ class XiaoHongShuClient(AbstractApiClient):
         self.headers = headers
         self._host = "https://edith.xiaohongshu.com"
         self._domain = "https://www.xiaohongshu.com"
-        self.IP_ERROR_STR = "网络连接异常，请检查网络设置或重启试试"
+        self.IP_ERROR_STR = "網絡連接異常，請檢查網絡設置或重啓試試"
         self.IP_ERROR_CODE = 300012
-        self.NOTE_ABNORMAL_STR = "笔记状态异常，请稍后查看"
+        self.NOTE_ABNORMAL_STR = "筆記狀態異常，請稍後查看"
         self.NOTE_ABNORMAL_CODE = -510001
         self.playwright_page = playwright_page
         self.cookie_dict = cookie_dict
@@ -56,7 +56,7 @@ class XiaoHongShuClient(AbstractApiClient):
 
     async def _pre_headers(self, url: str, data=None) -> Dict:
         """
-        请求头参数签名
+        請求頭參數簽名
         Args:
             url:
             data:
@@ -85,11 +85,11 @@ class XiaoHongShuClient(AbstractApiClient):
     @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
     async def request(self, method, url, **kwargs) -> Union[str, Any]:
         """
-        封装httpx的公共请求方法，对请求响应做一些处理
+        封裝httpx的公共請求方法，對請求響應做一些處理
         Args:
-            method: 请求方法
-            url: 请求的URL
-            **kwargs: 其他请求参数，例如请求头、请求体等
+            method: 請求方法
+            url: 請求的URL
+            **kwargs: 其他請求參數，例如請求頭、請求體等
 
         Returns:
 
@@ -103,7 +103,7 @@ class XiaoHongShuClient(AbstractApiClient):
             # someday someone maybe will bypass captcha
             verify_type = response.headers["Verifytype"]
             verify_uuid = response.headers["Verifyuuid"]
-            msg = f"出现验证码，请求失败，Verifytype: {verify_type}，Verifyuuid: {verify_uuid}, Response: {response}"
+            msg = f"出現驗證碼，請求失敗，Verifytype: {verify_type}，Verifyuuid: {verify_uuid}, Response: {response}"
             utils.logger.error(msg)
             raise Exception(msg)
 
@@ -119,10 +119,10 @@ class XiaoHongShuClient(AbstractApiClient):
 
     async def get(self, uri: str, params=None) -> Dict:
         """
-        GET请求，对请求头签名
+        GET請求，對請求頭簽名
         Args:
-            uri: 请求路由
-            params: 请求参数
+            uri: 請求路由
+            params: 請求參數
 
         Returns:
 
@@ -137,10 +137,10 @@ class XiaoHongShuClient(AbstractApiClient):
 
     async def post(self, uri: str, data: dict, **kwargs) -> Dict:
         """
-        POST请求，对请求头签名
+        POST請求，對請求頭簽名
         Args:
-            uri: 请求路由
-            data: 请求体参数
+            uri: 請求路由
+            data: 請求體參數
 
         Returns:
 
@@ -172,12 +172,12 @@ class XiaoHongShuClient(AbstractApiClient):
             ) as exc:  # some wrong when call httpx.request method, such as connection error, client error, server error or response status code is not 2xx
                 utils.logger.error(
                     f"[XiaoHongShuClient.get_aweme_media] {exc.__class__.__name__} for {exc.request.url} - {exc}"
-                )  # 保留原始异常类型名称，以便开发者调试
+                )  # 保留原始異常類型名稱，以便開發者調試
                 return None
 
     async def pong(self) -> bool:
         """
-        用于检查登录态是否失效了
+        用於檢查登錄態是否失效了
         Returns:
 
         """
@@ -185,7 +185,7 @@ class XiaoHongShuClient(AbstractApiClient):
         utils.logger.info("[XiaoHongShuClient.pong] Begin to pong xhs...")
         ping_flag = False
         try:
-            note_card: Dict = await self.get_note_by_keyword(keyword="小红书")
+            note_card: Dict = await self.get_note_by_keyword(keyword="小紅書")
             if note_card.get("items"):
                 ping_flag = True
         except Exception as e:
@@ -197,9 +197,9 @@ class XiaoHongShuClient(AbstractApiClient):
 
     async def update_cookies(self, browser_context: BrowserContext):
         """
-        API客户端提供的更新cookies方法，一般情况下登录成功后会调用此方法
+        API客戶端提供的更新cookies方法，一般情況下登錄成功後會調用此方法
         Args:
-            browser_context: 浏览器上下文对象
+            browser_context: 瀏覽器上下文對象
 
         Returns:
 
@@ -218,13 +218,13 @@ class XiaoHongShuClient(AbstractApiClient):
         note_type: SearchNoteType = SearchNoteType.ALL,
     ) -> Dict:
         """
-        根据关键词搜索笔记
+        根據關鍵詞搜索筆記
         Args:
-            keyword: 关键词参数
-            page: 分页第几页
-            page_size: 分页数据长度
-            sort: 搜索结果排序指定
-            note_type: 搜索的笔记类型
+            keyword: 關鍵詞參數
+            page: 分頁第幾頁
+            page_size: 分頁數據長度
+            sort: 搜索結果排序指定
+            note_type: 搜索的筆記類型
 
         Returns:
 
@@ -247,11 +247,11 @@ class XiaoHongShuClient(AbstractApiClient):
         xsec_token: str,
     ) -> Dict:
         """
-        获取笔记详情API
+        獲取筆記詳情API
         Args:
-            note_id:笔记ID
-            xsec_source: 渠道来源
-            xsec_token: 搜索关键字之后返回的比较列表中返回的token
+            note_id:筆記ID
+            xsec_source: 渠道來源
+            xsec_token: 搜索關鍵字之後返回的比較列表中返回的token
 
         Returns:
 
@@ -271,7 +271,7 @@ class XiaoHongShuClient(AbstractApiClient):
         if res and res.get("items"):
             res_dict: Dict = res["items"][0]["note_card"]
             return res_dict
-        # 爬取频繁了可能会出现有的笔记能有结果有的没有
+        # 爬取頻繁了可能會出現有的筆記能有結果有的沒有
         utils.logger.error(
             f"[XiaoHongShuClient.get_note_by_id] get note id:{note_id} empty and res:{res}"
         )
@@ -284,11 +284,11 @@ class XiaoHongShuClient(AbstractApiClient):
         cursor: str = "",
     ) -> Dict:
         """
-        获取一级评论的API
+        獲取一級評論的API
         Args:
-            note_id: 笔记ID
-            xsec_token: 验证token
-            cursor: 分页游标
+            note_id: 筆記ID
+            xsec_token: 驗證token
+            cursor: 分頁遊標
 
         Returns:
 
@@ -312,13 +312,13 @@ class XiaoHongShuClient(AbstractApiClient):
         cursor: str = "",
     ):
         """
-        获取指定父评论下的子评论的API
+        獲取指定父評論下的子評論的API
         Args:
-            note_id: 子评论的帖子ID
-            root_comment_id: 根评论ID
-            xsec_token: 验证token
-            num: 分页数量
-            cursor: 分页游标
+            note_id: 子評論的帖子ID
+            root_comment_id: 根評論ID
+            xsec_token: 驗證token
+            num: 分頁數量
+            cursor: 分頁遊標
 
         Returns:
 
@@ -344,13 +344,13 @@ class XiaoHongShuClient(AbstractApiClient):
         max_count: int = 10,
     ) -> List[Dict]:
         """
-        获取指定笔记下的所有一级评论，该方法会一直查找一个帖子下的所有评论信息
+        獲取指定筆記下的所有一級評論，該方法會一直查找一個帖子下的所有評論信息
         Args:
-            note_id: 笔记ID
-            xsec_token: 验证token
-            crawl_interval: 爬取一次笔记的延迟单位（秒）
-            callback: 一次笔记爬取结束后
-            max_count: 一次笔记爬取的最大评论数量
+            note_id: 筆記ID
+            xsec_token: 驗證token
+            crawl_interval: 爬取一次筆記的延遲單位（秒）
+            callback: 一次筆記爬取結束後
+            max_count: 一次筆記爬取的最大評論數量
         Returns:
 
         """
@@ -392,12 +392,12 @@ class XiaoHongShuClient(AbstractApiClient):
         callback: Optional[Callable] = None,
     ) -> List[Dict]:
         """
-        获取指定一级评论下的所有二级评论, 该方法会一直查找一级评论下的所有二级评论信息
+        獲取指定一級評論下的所有二級評論, 該方法會一直查找一級評論下的所有二級評論信息
         Args:
-            comments: 评论列表
-            xsec_token: 验证token
-            crawl_interval: 爬取一次评论的延迟单位（秒）
-            callback: 一次评论爬取结束后
+            comments: 評論列表
+            xsec_token: 驗證token
+            crawl_interval: 爬取一次評論的延遲單位（秒）
+            callback: 一次評論爬取結束後
 
         Returns:
 
@@ -454,18 +454,18 @@ class XiaoHongShuClient(AbstractApiClient):
         self, user_id: str, xsec_token: str = "", xsec_source: str = ""
     ) -> Dict:
         """
-        通过解析网页版的用户主页HTML，获取用户个人简要信息
-        PC端用户主页的网页存在window.__INITIAL_STATE__这个变量上的，解析它即可
+        通過解析網頁版的用戶主頁HTML，獲取用戶個人簡要信息
+        PC端用戶主頁的網頁存在window.__INITIAL_STATE__這個變量上的，解析它即可
 
         Args:
-            user_id: 用户ID
-            xsec_token: 验证token (可选,如果URL中包含此参数则传入)
-            xsec_source: 渠道来源 (可选,如果URL中包含此参数则传入)
+            user_id: 用戶ID
+            xsec_token: 驗證token (可選,如果URL中包含此參數則傳入)
+            xsec_source: 渠道來源 (可選,如果URL中包含此參數則傳入)
 
         Returns:
-            Dict: 创作者信息
+            Dict: 創作者信息
         """
-        # 构建URI,如果有xsec参数则添加到URL中
+        # 構建URI,如果有xsec參數則添加到URL中
         uri = f"/user/profile/{user_id}"
         if xsec_token and xsec_source:
             uri = f"{uri}?xsec_token={xsec_token}&xsec_source={xsec_source}"
@@ -482,11 +482,11 @@ class XiaoHongShuClient(AbstractApiClient):
         page_size: int = 30,
     ) -> Dict:
         """
-        获取博主的笔记
+        獲取博主的筆記
         Args:
             creator: 博主ID
-            cursor: 上一页最后一条笔记的ID
-            page_size: 分页数据长度
+            cursor: 上一頁最後一條筆記的ID
+            page_size: 分頁數據長度
 
         Returns:
 
@@ -507,11 +507,11 @@ class XiaoHongShuClient(AbstractApiClient):
         callback: Optional[Callable] = None,
     ) -> List[Dict]:
         """
-        获取指定用户下的所有发过的帖子，该方法会一直查找一个用户下的所有帖子信息
+        獲取指定用戶下的所有發過的帖子，該方法會一直查找一個用戶下的所有帖子信息
         Args:
-            user_id: 用户ID
-            crawl_interval: 爬取一次的延迟单位（秒）
-            callback: 一次分页爬取结束后的更新回调函数
+            user_id: 用戶ID
+            crawl_interval: 爬取一次的延遲單位（秒）
+            callback: 一次分頁爬取結束後的更新回調函數
 
         Returns:
 
@@ -558,9 +558,9 @@ class XiaoHongShuClient(AbstractApiClient):
 
     async def get_note_short_url(self, note_id: str) -> Dict:
         """
-        获取笔记的短链接
+        獲取筆記的短鏈接
         Args:
-            note_id: 笔记ID
+            note_id: 筆記ID
 
         Returns:
 
@@ -578,7 +578,7 @@ class XiaoHongShuClient(AbstractApiClient):
         enable_cookie: bool = False,
     ) -> Optional[Dict]:
         """
-        通过解析网页版的笔记详情页HTML，获取笔记详情, 该接口可能会出现失败的情况，这里尝试重试3次
+        通過解析網頁版的筆記詳情頁HTML，獲取筆記詳情, 該接口可能會出現失敗的情況，這裏嘗試重試3次
         copy from https://github.com/ReaJason/xhs/blob/eb1c5a0213f6fbb592f0a2897ee552847c69ea2d/xhs/core.py#L217-L259
         thanks for ReaJason
         Args:

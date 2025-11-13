@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-# 声明：本代码仅供学习和研究目的使用。使用者应遵守以下原则：
-# 1. 不得用于任何商业用途。
-# 2. 使用时应遵守目标平台的使用条款和robots.txt规则。
-# 3. 不得进行大规模爬取或对平台造成运营干扰。
-# 4. 应合理控制请求频率，避免给目标平台带来不必要的负担。
-# 5. 不得用于任何非法或不当的用途。
+# 聲明：本代碼僅供學習和研究目的使用。使用者應遵守以下原則：
+# 1. 不得用於任何商業用途。
+# 2. 使用時應遵守目標平臺的使用條款和robots.txt規則。
+# 3. 不得進行大規模爬取或對平臺造成運營幹擾。
+# 4. 應合理控制請求頻率，避免給目標平臺帶來不必要的負擔。
+# 5. 不得用於任何非法或不當的用途。
 #
-# 详细许可条款请参阅项目根目录下的LICENSE文件。
-# 使用本代码即表示您同意遵守上述原则和LICENSE中的所有条款。
+# 詳細許可條款請參閱項目根目錄下的LICENSE文件。
+# 使用本代碼即表示您同意遵守上述原則和LICENSE中的所有條款。
 
 import hashlib
 import base64
@@ -20,12 +20,12 @@ def _build_c(e: Any, a: Any) -> str:
         c += json.dumps(a, separators=(",", ":"), ensure_ascii=False)
     elif isinstance(a, str):
         c += a
-    # 其它类型不拼
+    # 其它類型不拼
     return c
 
 
 # ---------------------------
-# p.Pu = MD5(c) => hex 小写
+# p.Pu = MD5(c) => hex 小寫
 # ---------------------------
 def _md5_hex(s: str) -> str:
     return hashlib.md5(s.encode("utf-8")).hexdigest()
@@ -33,8 +33,8 @@ def _md5_hex(s: str) -> str:
 
 
 # ============================================================
-# Playwright 版本（异步）：传入 page（Page 对象）
-#    内部用 page.evaluate('window.mnsv2(...)')
+# Playwright 版本（異步）：傳入 page（Page 對象）
+#    內部用 page.evaluate('window.mnsv2(...)')
 # ============================================================
 async def seccore_signv2_playwright(
     page,  # Playwright Page
@@ -42,8 +42,8 @@ async def seccore_signv2_playwright(
     a: Any,
 ) -> str:
     """
-    使用 Playwright 的 page.evaluate 调用 window.mnsv2(c, d) 来生成签名。
-    需确保 page 上下文中已存在 window.mnsv2（比如已注入目标站点脚本）。
+    使用 Playwright 的 page.evaluate 調用 window.mnsv2(c, d) 來生成簽名。
+    需確保 page 上下文中已存在 window.mnsv2（比如已注入目標站點腳本）。
 
     用法：
       s = await page.evaluate("(c, d) => window.mnsv2(c, d)", c, d)
@@ -51,7 +51,7 @@ async def seccore_signv2_playwright(
     c = _build_c(e, a)
     d = _md5_hex(c)
 
-    # 调用浏览器上下文里的 window.mnsv2
+    # 調用瀏覽器上下文裏的 window.mnsv2
     s = await page.evaluate("(c, d) => window.mnsv2(c, d)", [c, d])
     f = {
         "x0": "4.2.6",

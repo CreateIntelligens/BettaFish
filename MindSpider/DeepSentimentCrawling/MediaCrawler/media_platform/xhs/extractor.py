@@ -1,12 +1,12 @@
-# 声明：本代码仅供学习和研究目的使用。使用者应遵守以下原则：
-# 1. 不得用于任何商业用途。
-# 2. 使用时应遵守目标平台的使用条款和robots.txt规则。
-# 3. 不得进行大规模爬取或对平台造成运营干扰。
-# 4. 应合理控制请求频率，避免给目标平台带来不必要的负担。
-# 5. 不得用于任何非法或不当的用途。
+# 聲明：本代碼僅供學習和研究目的使用。使用者應遵守以下原則：
+# 1. 不得用於任何商業用途。
+# 2. 使用時應遵守目標平臺的使用條款和robots.txt規則。
+# 3. 不得進行大規模爬取或對平臺造成運營幹擾。
+# 4. 應合理控制請求頻率，避免給目標平臺帶來不必要的負擔。
+# 5. 不得用於任何非法或不當的用途。
 #
-# 详细许可条款请参阅项目根目录下的LICENSE文件。
-# 使用本代码即表示您同意遵守上述原则和LICENSE中的所有条款。
+# 詳細許可條款請參閱項目根目錄下的LICENSE文件。
+# 使用本代碼即表示您同意遵守上述原則和LICENSE中的所有條款。
 
 import json
 import re
@@ -20,16 +20,16 @@ class XiaoHongShuExtractor:
         pass
 
     def extract_note_detail_from_html(self, note_id: str, html: str) -> Optional[Dict]:
-        """从html中提取笔记详情
+        """從html中提取筆記詳情
 
         Args:
             html (str): html字符串
 
         Returns:
-            Dict: 笔记详情字典
+            Dict: 筆記詳情字典
         """
         if "noteDetailMap" not in html:
-            # 这种情况要么是出了验证码了，要么是笔记不存在
+            # 這種情況要麼是出了驗證碼了，要麼是筆記不存在
             return None
 
         state = re.findall(r"window.__INITIAL_STATE__=({.*})</script>", html)[
@@ -41,13 +41,13 @@ class XiaoHongShuExtractor:
         return None
 
     def extract_creator_info_from_html(self, html: str) -> Optional[Dict]:
-        """从html中提取用户信息
+        """從html中提取用戶信息
 
         Args:
             html (str): html字符串
 
         Returns:
-            Dict: 用户信息字典
+            Dict: 用戶信息字典
         """
         match = re.search(
             r"<script>window.__INITIAL_STATE__=(.+)<\/script>", html, re.M

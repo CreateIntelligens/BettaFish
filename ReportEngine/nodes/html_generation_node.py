@@ -1,6 +1,6 @@
 """
-HTML生成节点
-将整合后的内容转换为美观的HTML报告
+HTML生成節點
+將整合後的內容轉換爲美觀的HTML報告
 """
 
 import json
@@ -12,41 +12,41 @@ from .base_node import StateMutationNode
 from ..llms.base import LLMClient
 from ..state.state import ReportState
 from ..prompts import SYSTEM_PROMPT_HTML_GENERATION
-# 不再需要text_processing依赖
+# 不再需要text_processing依賴
 
 
 class HTMLGenerationNode(StateMutationNode):
-    """HTML生成处理节点"""
+    """HTML生成處理節點"""
     
     def __init__(self, llm_client: LLMClient):
         """
-        初始化HTML生成节点
+        初始化HTML生成節點
         
         Args:
-            llm_client: LLM客户端
+            llm_client: LLM客戶端
         """
         super().__init__(llm_client, "HTMLGenerationNode")
     
     def run(self, input_data: Dict[str, Any], **kwargs) -> str:
         """
-        执行HTML生成
+        執行HTML生成
         
         Args:
-            input_data: 包含报告数据的字典
-                - query: 原始查询
-                - query_engine_report: QueryEngine报告内容
-                - media_engine_report: MediaEngine报告内容  
-                - insight_engine_report: InsightEngine报告内容
-                - forum_logs: 论坛日志内容
-                - selected_template: 选择的模板内容
+            input_data: 包含報告數據的字典
+                - query: 原始查詢
+                - query_engine_report: QueryEngine報告內容
+                - media_engine_report: MediaEngine報告內容  
+                - insight_engine_report: InsightEngine報告內容
+                - forum_logs: 論壇日誌內容
+                - selected_template: 選擇的模板內容
                 
         Returns:
-            生成的HTML内容
+            生成的HTML內容
         """
-        logger.info("开始生成HTML报告...")
+        logger.info("開始生成HTML報告...")
         
         try:
-            # 准备LLM输入数据
+            # 準備LLM輸入數據
             llm_input = {
                 "query": input_data.get('query', ''),
                 "query_engine_report": input_data.get('query_engine_report', ''),
@@ -56,39 +56,39 @@ class HTMLGenerationNode(StateMutationNode):
                 "selected_template": input_data.get('selected_template', '')
             }
             
-            # 转换为JSON格式传递给LLM
+            # 轉換爲JSON格式傳遞給LLM
             message = json.dumps(llm_input, ensure_ascii=False, indent=2)
             
-            # 调用LLM生成HTML
+            # 調用LLM生成HTML
             response = self.llm_client.invoke(SYSTEM_PROMPT_HTML_GENERATION, message)
             
-            # 处理响应（简化版）
+            # 處理響應（簡化版）
             processed_response = self.process_output(response)
             
-            logger.info("HTML报告生成完成")
+            logger.info("HTML報告生成完成")
             return processed_response
             
         except Exception as e:
-            logger.exception(f"HTML生成失败: {str(e)}")
-            # 返回备用HTML
+            logger.exception(f"HTML生成失敗: {str(e)}")
+            # 返回備用HTML
             return self._generate_fallback_html(input_data)
     
     def mutate_state(self, input_data: Dict[str, Any], state: ReportState, **kwargs) -> ReportState:
         """
-        修改报告状态，添加生成的HTML内容
+        修改報告狀態，添加生成的HTML內容
         
         Args:
-            input_data: 输入数据
-            state: 当前报告状态
-            **kwargs: 额外参数
+            input_data: 輸入數據
+            state: 當前報告狀態
+            **kwargs: 額外參數
             
         Returns:
-            更新后的报告状态
+            更新後的報告狀態
         """
         # 生成HTML
         html_content = self.run(input_data, **kwargs)
         
-        # 更新状态
+        # 更新狀態
         state.html_content = html_content
         state.mark_completed()
         
@@ -96,54 +96,54 @@ class HTMLGenerationNode(StateMutationNode):
     
     def process_output(self, output: str) -> str:
         """
-        处理LLM输出，提取HTML内容
+        處理LLM輸出，提取HTML內容
         
         Args:
-            output: LLM原始输出
+            output: LLM原始輸出
             
         Returns:
-            HTML内容
+            HTML內容
         """
         try:
-            logger.info(f"处理LLM原始输出，长度: {len(output)} 字符")
+            logger.info(f"處理LLM原始輸出，長度: {len(output)} 字符")
             
             html_content = output.strip()
             
-            # 清理markdown代码块标记（如果存在）
+            # 清理markdown代碼塊標記（如果存在）
             if html_content.startswith('```html'):
                 html_content = html_content[7:]  # 移除 '```html'
                 if html_content.endswith('```'):
-                    html_content = html_content[:-3]  # 移除结尾的 '```'
+                    html_content = html_content[:-3]  # 移除結尾的 '```'
             elif html_content.startswith('```') and html_content.endswith('```'):
-                html_content = html_content[3:-3]  # 移除前后的 '```'
+                html_content = html_content[3:-3]  # 移除前後的 '```'
             
             html_content = html_content.strip()
             
-            # 如果内容为空，返回原始输出
+            # 如果內容爲空，返回原始輸出
             if not html_content:
-                logger.info("处理后内容为空，返回原始输出")
+                logger.info("處理後內容爲空，返回原始輸出")
                 html_content = output
             
-            logger.info(f"HTML处理完成，最终长度: {len(html_content)} 字符")
+            logger.info(f"HTML處理完成，最終長度: {len(html_content)} 字符")
             return html_content
             
         except Exception as e:
-            logger.exception(f"处理HTML输出失败: {str(e)}，返回原始输出")
+            logger.exception(f"處理HTML輸出失敗: {str(e)}，返回原始輸出")
             return output
     
     def _generate_fallback_html(self, input_data: Dict[str, Any]) -> str:
         """
-        生成备用HTML报告（当LLM失败时使用）
+        生成備用HTML報告（當LLM失敗時使用）
         
         Args:
-            input_data: 输入数据
+            input_data: 輸入數據
             
         Returns:
-            备用HTML内容
+            備用HTML內容
         """
-        logger.info("使用备用HTML生成方法")
+        logger.info("使用備用HTML生成方法")
         
-        query = input_data.get('query', '智能舆情分析报告')
+        query = input_data.get('query', '智能輿情分析報告')
         query_report = input_data.get('query_engine_report', '')
         media_report = input_data.get('media_engine_report', '')
         insight_report = input_data.get('insight_engine_report', '')
@@ -156,7 +156,7 @@ class HTMLGenerationNode(StateMutationNode):
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{query} - 智能舆情分析报告</title>
+    <title>{query} - 智能輿情分析報告</title>
     <style>
         body {{
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -216,34 +216,34 @@ class HTMLGenerationNode(StateMutationNode):
         <h1>{query}</h1>
         
         <div class="meta">
-            <strong>报告生成时间:</strong> {generation_time}<br>
-            <strong>数据来源:</strong> QueryEngine、MediaEngine、InsightEngine、ForumEngine<br>
-            <strong>报告类型:</strong> 综合舆情分析报告
+            <strong>報告生成時間:</strong> {generation_time}<br>
+            <strong>數據來源:</strong> QueryEngine、MediaEngine、InsightEngine、ForumEngine<br>
+            <strong>報告類型:</strong> 綜合輿情分析報告
         </div>
         
-        <h2>执行摘要</h2>
+        <h2>執行摘要</h2>
         <div class="section">
-            本报告整合了多个分析引擎的研究结果，为您提供全面的舆情分析洞察。
-            通过对查询主题"{query}"的深度分析，我们从多个维度展现了当前的舆情态势。
+            本報告整合了多個分析引擎的研究結果，爲您提供全面的輿情分析洞察。
+            通過對查詢主題"{query}"的深度分析，我們從多個維度展現了當前的輿情態勢。
         </div>
         
-        {f'<h2>QueryEngine分析结果</h2><div class="section"><pre>{query_report}</pre></div>' if query_report else ''}
+        {f'<h2>QueryEngine分析結果</h2><div class="section"><pre>{query_report}</pre></div>' if query_report else ''}
         
-        {f'<h2>MediaEngine分析结果</h2><div class="section"><pre>{media_report}</pre></div>' if media_report else ''}
+        {f'<h2>MediaEngine分析結果</h2><div class="section"><pre>{media_report}</pre></div>' if media_report else ''}
         
-        {f'<h2>InsightEngine分析结果</h2><div class="section"><pre>{insight_report}</pre></div>' if insight_report else ''}
+        {f'<h2>InsightEngine分析結果</h2><div class="section"><pre>{insight_report}</pre></div>' if insight_report else ''}
         
-        {f'<h2>论坛监控数据</h2><div class="section"><pre>{forum_logs}</pre></div>' if forum_logs else ''}
+        {f'<h2>論壇監控數據</h2><div class="section"><pre>{forum_logs}</pre></div>' if forum_logs else ''}
         
-        <h2>综合结论</h2>
+        <h2>綜合結論</h2>
         <div class="section">
-            基于多个分析引擎的综合研究，我们对"{query}"主题进行了全面分析。
-            各引擎从不同角度提供了深入洞察，为决策提供了重要参考。
+            基於多個分析引擎的綜合研究，我們對"{query}"主題進行了全面分析。
+            各引擎從不同角度提供了深入洞察，爲決策提供了重要參考。
         </div>
         
         <div class="footer">
-            <p>本报告由智能舆情分析平台自动生成</p>
-            <p>ReportEngine v1.0 | 生成时间: {generation_time}</p>
+            <p>本報告由智能輿情分析平臺自動生成</p>
+            <p>ReportEngine v1.0 | 生成時間: {generation_time}</p>
         </div>
     </div>
 </body>

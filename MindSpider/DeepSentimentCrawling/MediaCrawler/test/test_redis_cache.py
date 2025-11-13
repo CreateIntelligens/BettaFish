@@ -1,17 +1,17 @@
-# 声明：本代码仅供学习和研究目的使用。使用者应遵守以下原则：  
-# 1. 不得用于任何商业用途。  
-# 2. 使用时应遵守目标平台的使用条款和robots.txt规则。  
-# 3. 不得进行大规模爬取或对平台造成运营干扰。  
-# 4. 应合理控制请求频率，避免给目标平台带来不必要的负担。   
-# 5. 不得用于任何非法或不当的用途。
+# 聲明：本代碼僅供學習和研究目的使用。使用者應遵守以下原則：  
+# 1. 不得用於任何商業用途。  
+# 2. 使用時應遵守目標平臺的使用條款和robots.txt規則。  
+# 3. 不得進行大規模爬取或對平臺造成運營幹擾。  
+# 4. 應合理控制請求頻率，避免給目標平臺帶來不必要的負擔。   
+# 5. 不得用於任何非法或不當的用途。
 #   
-# 详细许可条款请参阅项目根目录下的LICENSE文件。  
-# 使用本代码即表示您同意遵守上述原则和LICENSE中的所有条款。  
+# 詳細許可條款請參閱項目根目錄下的LICENSE文件。  
+# 使用本代碼即表示您同意遵守上述原則和LICENSE中的所有條款。  
 
 
 # -*- coding: utf-8 -*-
 # @Author  : relakkes@gmail.com
-# @Name    : 程序员阿江-Relakkes
+# @Name    : 程序員阿江-Relakkes
 # @Time    : 2024/6/2 19:54
 # @Desc    :
 
@@ -43,7 +43,7 @@ class TestRedisCache(unittest.TestCase):
         self.assertIn('key2', keys)
 
     def tearDown(self):
-        # self.redis_cache._redis_client.flushdb()  # 清空redis数据库
+        # self.redis_cache._redis_client.flushdb()  # 清空redis數據庫
         pass
 
 

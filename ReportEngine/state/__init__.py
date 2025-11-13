@@ -1,6 +1,6 @@
 """
-Report Engine状态管理模块
-定义报告生成过程中的简化状态数据结构
+Report Engine狀態管理模塊
+定義報告生成過程中的簡化狀態數據結構
 """
 
 from .state import ReportState, ReportMetadata

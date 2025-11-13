@@ -1,6 +1,6 @@
 """
-节点基类
-定义所有处理节点的基础接口
+節點基類
+定義所有處理節點的基礎接口
 """
 
 from abc import ABC, abstractmethod
@@ -11,15 +11,15 @@ from ..state.state import State
 
 
 class BaseNode(ABC):
-    """节点基类"""
+    """節點基類"""
     
     def __init__(self, llm_client: LLMClient, node_name: str = ""):
         """
-        初始化节点
+        初始化節點
         
         Args:
-            llm_client: LLM客户端
-            node_name: 节点名称
+            llm_client: LLM客戶端
+            node_name: 節點名稱
         """
         self.llm_client = llm_client
         self.node_name = node_name or self.__class__.__name__
@@ -27,68 +27,68 @@ class BaseNode(ABC):
     @abstractmethod
     def run(self, input_data: Any, **kwargs) -> Any:
         """
-        执行节点处理逻辑
+        執行節點處理邏輯
         
         Args:
-            input_data: 输入数据
-            **kwargs: 额外参数
+            input_data: 輸入數據
+            **kwargs: 額外參數
             
         Returns:
-            处理结果
+            處理結果
         """
         pass
     
     def validate_input(self, input_data: Any) -> bool:
         """
-        验证输入数据
+        驗證輸入數據
         
         Args:
-            input_data: 输入数据
+            input_data: 輸入數據
             
         Returns:
-            验证是否通过
+            驗證是否通過
         """
         return True
     
     def process_output(self, output: Any) -> Any:
         """
-        处理输出数据
+        處理輸出數據
         
         Args:
-            output: 原始输出
+            output: 原始輸出
             
         Returns:
-            处理后的输出
+            處理後的輸出
         """
         return output
     
     def log_info(self, message: str):
-        """记录信息日志"""
+        """記錄信息日誌"""
         logger.info(f"[{self.node_name}] {message}")
     
     def log_warning(self, message: str):
-        """记录警告日志"""
+        """記錄警告日誌"""
         logger.warning(f"[{self.node_name}] 警告: {message}")
     
     def log_error(self, message: str):
-        """记录错误日志"""
-        logger.error(f"[{self.node_name}] 错误: {message}")
+        """記錄錯誤日誌"""
+        logger.error(f"[{self.node_name}] 錯誤: {message}")
 
 
 class StateMutationNode(BaseNode):
-    """带状态修改功能的节点基类"""
+    """帶狀態修改功能的節點基類"""
     
     @abstractmethod
     def mutate_state(self, input_data: Any, state: State, **kwargs) -> State:
         """
-        修改状态
+        修改狀態
         
         Args:
-            input_data: 输入数据
-            state: 当前状态
-            **kwargs: 额外参数
+            input_data: 輸入數據
+            state: 當前狀態
+            **kwargs: 額外參數
             
         Returns:
-            修改后的状态
+            修改後的狀態
         """
         pass

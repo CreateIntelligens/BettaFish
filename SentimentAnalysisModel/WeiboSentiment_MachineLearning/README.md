@@ -1,34 +1,34 @@
-# 微博情感分析 - 传统机器学习方法
+# 微博情感分析 - 傳統機器學習方法
 
-## 项目介绍
+## 項目介紹
 
-本项目使用5种传统机器学习方法对中文微博进行情感二分类（正面/负面）：
+本項目使用5種傳統機器學習方法對中文微博進行情感二分類（正面/負面）：
 
-- **朴素贝叶斯**: 基于词袋模型的概率分类
-- **SVM**: 基于TF-IDF特征的支持向量机  
-- **XGBoost**: 梯度提升决策树
-- **LSTM**: 循环神经网络 + Word2Vec词向量
-- **BERT+分类头**: 预训练语言模型接分类器（我认为也属于传统ML范畴）
+- **樸素貝葉斯**: 基於詞袋模型的概率分類
+- **SVM**: 基於TF-IDF特徵的支持向量機  
+- **XGBoost**: 梯度提升決策樹
+- **LSTM**: 循環神經網絡 + Word2Vec詞向量
+- **BERT+分類頭**: 預訓練語言模型接分類器（我認爲也屬於傳統ML範疇）
 
 ## 模型性能
 
-在微博情感数据集上的表现（训练集10000条，测试集500条）：
+在微博情感數據集上的表現（訓練集10000條，測試集500條）：
 
-| 模型 | 准确率 | AUC | 特点 |
+| 模型 | 準確率 | AUC | 特點 |
 |------|--------|-----|------|
-| 朴素贝叶斯 | 85.6% | - | 速度快，内存占用小 |
+| 樸素貝葉斯 | 85.6% | - | 速度快，內存佔用小 |
 | SVM | 85.6% | - | 泛化能力好 |
-| XGBoost | 86.0% | 90.4% | 性能稳定，支持特征重要性 |
+| XGBoost | 86.0% | 90.4% | 性能穩定，支持特徵重要性 |
 | LSTM | 87.0% | 93.1% | 理解序列信息和上下文 |
-| BERT+分类头 | 87.0% | 92.9% | 强大的语义理解能力 |
+| BERT+分類頭 | 87.0% | 92.9% | 強大的語義理解能力 |
 
-## 环境配置
+## 環境配置
 
 ```bash
 pip install -r requirements.txt
 ```
 
-数据文件结构：
+數據文件結構：
 ```
 data/
 ├── weibo2018/
@@ -37,9 +37,9 @@ data/
 └── stopwords.txt
 ```
 
-## 训练模型（后面可以不接参数直接运行）
+## 訓練模型（後面可以不接參數直接運行）
 
-### 朴素贝叶斯
+### 樸素貝葉斯
 ```bash
 python bayes_train.py
 ```
@@ -64,44 +64,44 @@ python lstm_train.py --epochs 5 --batch_size 100 --hidden_size 64
 python bert_train.py --epochs 10 --batch_size 100 --learning_rate 1e-3
 ```
 
-注：BERT模型会自动下载中文预训练模型（bert-base-chinese）
+注：BERT模型會自動下載中文預訓練模型（bert-base-chinese）
 
-## 使用预测
+## 使用預測
 
-### 交互式预测（推荐）
+### 交互式預測（推薦）
 ```bash
 python predict.py
 ```
 
-### 命令行预测
+### 命令行預測
 ```bash
-# 单模型预测
-python predict.py --model_type bert --text "今天天气真好，心情很棒"
+# 單模型預測
+python predict.py --model_type bert --text "今天天氣真好，心情很棒"
 
-# 多模型集成预测
-python predict.py --ensemble --text "这部电影太无聊了"
+# 多模型集成預測
+python predict.py --ensemble --text "這部電影太無聊了"
 ```
 
-## 文件结构
+## 文件結構
 
 ```
 WeiboSentiment_MachineLearning/
-├── bayes_train.py           # 朴素贝叶斯训练
-├── svm_train.py             # SVM训练
-├── xgboost_train.py         # XGBoost训练
-├── lstm_train.py            # LSTM训练
-├── bert_train.py            # BERT训练
-├── predict.py               # 统一预测程序
-├── base_model.py            # 基础模型类
-├── utils.py                 # 工具函数
-├── requirements.txt         # 依赖包
-├── model/                   # 模型保存目录
-└── data/                    # 数据目录
+├── bayes_train.py           # 樸素貝葉斯訓練
+├── svm_train.py             # SVM訓練
+├── xgboost_train.py         # XGBoost訓練
+├── lstm_train.py            # LSTM訓練
+├── bert_train.py            # BERT訓練
+├── predict.py               # 統一預測程序
+├── base_model.py            # 基礎模型類
+├── utils.py                 # 工具函數
+├── requirements.txt         # 依賴包
+├── model/                   # 模型保存目錄
+└── data/                    # 數據目錄
 ```
 
-## 注意事项
+## 注意事項
 
-1. **BERT模型**首次运行会自动下载预训练模型（约400MB）
-2. **LSTM模型**训练时间较长，建议使用GPU
-3. **模型保存**在 `model/` 目录下，确保有足够磁盘空间
-4. **内存需求**BERT > LSTM > XGBoost > SVM > 朴素贝叶斯
+1. **BERT模型**首次運行會自動下載預訓練模型（約400MB）
+2. **LSTM模型**訓練時間較長，建議使用GPU
+3. **模型保存**在 `model/` 目錄下，確保有足夠磁盤空間
+4. **內存需求**BERT > LSTM > XGBoost > SVM > 樸素貝葉斯

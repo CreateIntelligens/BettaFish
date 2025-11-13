@@ -45,16 +45,14 @@ WORKDIR /app
 
 # Install Python dependencies first to leverage Docker layer caching
 COPY requirements.txt ./
-RUN uv pip install --system -r requirements.txt
+# 先安裝除了 torch 以外的依賴
+RUN grep -v "^torch" requirements.txt > requirements_no_torch.txt && \
+    uv pip install --system -r requirements_no_torch.txt
+# 安裝 GPU 版本的 PyTorch (CUDA 12.6)
+RUN uv pip install --system torch torchvision --index-url https://download.pytorch.org/whl/cu126
 
 # Install Playwright browser binaries (system deps already handled above)
 RUN python -m playwright install chromium
-
-# Copy .env
-COPY .env.example .env
-
-# Copy application source
-COPY . .
 
 # Ensure runtime directories exist even if ignored in build context
 RUN mkdir -p /ms-playwright logs final_reports insight_engine_streamlit_reports media_engine_streamlit_reports query_engine_streamlit_reports

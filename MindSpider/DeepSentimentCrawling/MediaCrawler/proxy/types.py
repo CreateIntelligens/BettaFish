@@ -1,18 +1,18 @@
-# 声明：本代码仅供学习和研究目的使用。使用者应遵守以下原则：
-# 1. 不得用于任何商业用途。
-# 2. 使用时应遵守目标平台的使用条款和robots.txt规则。
-# 3. 不得进行大规模爬取或对平台造成运营干扰。
-# 4. 应合理控制请求频率，避免给目标平台带来不必要的负担。
-# 5. 不得用于任何非法或不当的用途。
+# 聲明：本代碼僅供學習和研究目的使用。使用者應遵守以下原則：
+# 1. 不得用於任何商業用途。
+# 2. 使用時應遵守目標平臺的使用條款和robots.txt規則。
+# 3. 不得進行大規模爬取或對平臺造成運營幹擾。
+# 4. 應合理控制請求頻率，避免給目標平臺帶來不必要的負擔。
+# 5. 不得用於任何非法或不當的用途。
 #
-# 详细许可条款请参阅项目根目录下的LICENSE文件。
-# 使用本代码即表示您同意遵守上述原则和LICENSE中的所有条款。
+# 詳細許可條款請參閱項目根目錄下的LICENSE文件。
+# 使用本代碼即表示您同意遵守上述原則和LICENSE中的所有條款。
 
 
 # -*- coding: utf-8 -*-
 # @Author  : relakkes@gmail.com
 # @Time    : 2024/4/5 10:18
-# @Desc    : 基础类型
+# @Desc    : 基礎類型
 from enum import Enum
 from typing import Optional
 
@@ -29,7 +29,7 @@ class IpInfoModel(BaseModel):
 
     ip: str = Field(title="ip")
     port: int = Field(title="端口")
-    user: str = Field(title="IP代理认证的用户名")
-    protocol: str = Field(default="https://", title="代理IP的协议")
-    password: str = Field(title="IP代理认证用户的密码")
-    expired_time_ts: Optional[int] = Field(title="IP 过期时间")
+    user: str = Field(title="IP代理認證的用戶名")
+    protocol: str = Field(default="https://", title="代理IP的協議")
+    password: str = Field(title="IP代理認證用戶的密碼")
+    expired_time_ts: Optional[int] = Field(title="IP 過期時間")

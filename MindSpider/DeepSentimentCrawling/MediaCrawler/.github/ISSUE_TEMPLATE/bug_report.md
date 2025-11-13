@@ -1,39 +1,39 @@
 ---  
-name: MediaCrawler Bug反馈  
-about: 创建一个问题Bug以帮助MediaCrawler开源项目改进 
+name: MediaCrawler Bug反饋  
+about: 創建一個問題Bug以幫助MediaCrawler開源項目改進 
 title: '[BUG] '  
 labels: bug  
 assignees: ''  
 ---  
 
-## 🔍 问题检查清单  
-<!-- 请在提交issue前确认以下事项 -->  
+## 🔍 問題檢查清單  
+<!-- 請在提交issue前確認以下事項 -->  
 
-- [ ] 我已经仔细阅读了项目使用过程中的[常见问题汇总](https://nanmicoder.github.io/MediaCrawler/%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98.html) 
-- [ ] 我已经搜索并查看了[已关闭的issues](https://github.com/NanmiCoder/MediaCrawler/issues?q=is%3Aissue+is%3Aclosed)  
-- [ ] 我确认这不是由于滑块验证码、Cookie过期、Cookie提取错误、平台风控等常见原因导致的问题  
+- [ ] 我已經仔細閱讀了項目使用過程中的[常見問題彙總](https://nanmicoder.github.io/MediaCrawler/%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98.html) 
+- [ ] 我已經搜索並查看了[已關閉的issues](https://github.com/NanmiCoder/MediaCrawler/issues?q=is%3Aissue+is%3Aclosed)  
+- [ ] 我確認這不是由於滑塊驗證碼、Cookie過期、Cookie提取錯誤、平臺風控等常見原因導致的問題  
 
-## 🐛 问题描述  
-<!-- 请详细描述你遇到的问题 -->  
+## 🐛 問題描述  
+<!-- 請詳細描述你遇到的問題 -->  
 
 
-## 📝 复现步骤  
+## 📝 復現步驟  
 1.   
 2.   
 3.   
 
-## 💻 运行环境  
-- 操作系统:   
+## 💻 運行環境  
+- 操作系統:   
 - Python版本:  
 - 是否使用IP代理:  
-- 是否使用VPN翻墙软件：
-- 目标平台(抖音/小红书/微博等):  
+- 是否使用VPN翻牆軟件：
+- 目標平臺(抖音/小紅書/微博等):  
 
-## 📋 错误日志  
-<!-- 请提供完整的错误日志信息 -->  
+## 📋 錯誤日誌  
+<!-- 請提供完整的錯誤日誌信息 -->  
 ```shell  
-在此粘贴错误日志
+在此粘貼錯誤日誌
 ```
 
-## 📷 错误截图
-<!-- 请提供错误截图 -->
+## 📷 錯誤截圖
+<!-- 請提供錯誤截圖 -->

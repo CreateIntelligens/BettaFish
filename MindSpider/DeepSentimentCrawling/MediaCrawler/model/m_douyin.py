@@ -1,12 +1,12 @@
-# 声明：本代码仅供学习和研究目的使用。使用者应遵守以下原则：
-# 1. 不得用于任何商业用途。
-# 2. 使用时应遵守目标平台的使用条款和robots.txt规则。
-# 3. 不得进行大规模爬取或对平台造成运营干扰。
-# 4. 应合理控制请求频率，避免给目标平台带来不必要的负担。
-# 5. 不得用于任何非法或不当的用途。
+# 聲明：本代碼僅供學習和研究目的使用。使用者應遵守以下原則：
+# 1. 不得用於任何商業用途。
+# 2. 使用時應遵守目標平臺的使用條款和robots.txt規則。
+# 3. 不得進行大規模爬取或對平臺造成運營幹擾。
+# 4. 應合理控制請求頻率，避免給目標平臺帶來不必要的負擔。
+# 5. 不得用於任何非法或不當的用途。
 #
-# 详细许可条款请参阅项目根目录下的LICENSE文件。
-# 使用本代码即表示您同意遵守上述原则和LICENSE中的所有条款。
+# 詳細許可條款請參閱項目根目錄下的LICENSE文件。
+# 使用本代碼即表示您同意遵守上述原則和LICENSE中的所有條款。
 
 
 # -*- coding: utf-8 -*-
@@ -15,11 +15,11 @@ from pydantic import BaseModel, Field
 
 
 class VideoUrlInfo(BaseModel):
-    """抖音视频URL信息"""
+    """抖音視頻URL信息"""
     aweme_id: str = Field(title="aweme id (video id)")
     url_type: str = Field(default="normal", title="url type: normal, short, modal")
 
 
 class CreatorUrlInfo(BaseModel):
-    """抖音创作者URL信息"""
+    """抖音創作者URL信息"""
     sec_user_id: str = Field(title="sec_user_id (creator id)")

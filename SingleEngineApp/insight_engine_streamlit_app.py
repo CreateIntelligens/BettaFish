@@ -1,6 +1,6 @@
 """
 Streamlit Web界面
-为Insight Agent提供友好的Web界面
+爲Insight Agent提供友好的Web界面
 """
 
 import os
@@ -11,11 +11,11 @@ import json
 import locale
 from loguru import logger
 
-# 设置UTF-8编码环境
+# 設置UTF-8編碼環境
 os.environ['PYTHONIOENCODING'] = 'utf-8'
 os.environ['PYTHONUTF8'] = '1'
 
-# 设置系统编码
+# 設置系統編碼
 try:
     locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
 except locale.Error:
@@ -24,7 +24,7 @@ except locale.Error:
     except locale.Error:
         pass
 
-# 添加src目录到Python路径
+# 添加src目錄到Python路徑
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 from InsightEngine import DeepSearchAgent, Settings
@@ -33,7 +33,7 @@ from utils.github_issues import error_with_issue_link
 
 
 def main():
-    """主函数"""
+    """主函數"""
     st.set_page_config(
         page_title="Insight Agent",
         page_icon="",
@@ -41,44 +41,44 @@ def main():
     )
 
     st.title("Insight Agent")
-    st.markdown("私有舆情数据库深度分析AI代理")
-    st.markdown("24小时全自动从包括微博、知乎、github、酷安等 13个 社媒平台、技术论坛广泛的爬取舆情数据")
+    st.markdown("私有輿情數據庫深度分析AI代理")
+    st.markdown("24小時全自動從包括微博、知乎、github、酷安等 13個 社媒平臺、技術論壇廣泛的爬取輿情數據")
 
-    # 检查URL参数
+    # 檢查URL參數
     try:
-        # 尝试使用新版本的query_params
+        # 嘗試使用新版本的query_params
         query_params = st.query_params
         auto_query = query_params.get('query', '')
         auto_search = query_params.get('auto_search', 'false').lower() == 'true'
     except AttributeError:
-        # 兼容旧版本
+        # 兼容舊版本
         query_params = st.experimental_get_query_params()
         auto_query = query_params.get('query', [''])[0]
         auto_search = query_params.get('auto_search', ['false'])[0].lower() == 'true'
 
-    # ----- 配置被硬编码 -----
-    # 强制使用 Kimi
+    # ----- 配置被硬編碼 -----
+    # 強制使用 Kimi
     model_name = settings.INSIGHT_ENGINE_MODEL_NAME or "kimi-k2-0711-preview"
-    # 默认高级配置
+    # 默認高級配置
     max_reflections = 2
-    max_content_length = 500000  # Kimi支持长文本
+    max_content_length = 500000  # Kimi支持長文本
 
-    # 简化的研究查询展示区域
+    # 簡化的研究查詢展示區域
 
-    # 如果有自动查询，使用它作为默认值，否则显示占位符
-    display_query = auto_query if auto_query else "等待从主页面接收分析内容..."
+    # 如果有自動查詢，使用它作爲默認值，否則顯示佔位符
+    display_query = auto_query if auto_query else "等待從主頁面接收分析內容..."
 
-    # 只读的查询展示区域
+    # 只讀的查詢展示區域
     st.text_area(
-        "当前查询",
+        "當前查詢",
         value=display_query,
         height=100,
         disabled=True,
-        help="查询内容由主页面的搜索框控制",
+        help="查詢內容由主頁面的搜索框控制",
         label_visibility="hidden"
     )
 
-    # 自动搜索逻辑
+    # 自動搜索邏輯
     start_research = False
     query = auto_query
 
@@ -86,22 +86,22 @@ def main():
         st.session_state.auto_search_executed = True
         start_research = True
     elif auto_query and not auto_search:
-        st.warning("等待搜索启动信号...")
+        st.warning("等待搜索啓動信號...")
 
-    # 验证配置
+    # 驗證配置
     if start_research:
         if not query.strip():
-            st.error("请输入研究查询")
-            logger.error("请输入研究查询")
+            st.error("請輸入研究查詢")
+            logger.error("請輸入研究查詢")
             return
 
-        # 检查配置中的LLM密钥
+        # 檢查配置中的LLM密鑰
         if not settings.INSIGHT_ENGINE_API_KEY:
-            st.error("请在您的环境变量中设置INSIGHT_ENGINE_API_KEY")
-            logger.error("请在您的环境变量中设置INSIGHT_ENGINE_API_KEY")
+            st.error("請在您的環境變量中設置INSIGHT_ENGINE_API_KEY")
+            logger.error("請在您的環境變量中設置INSIGHT_ENGINE_API_KEY")
             return
 
-        # 自动使用配置文件中的API密钥和数据库配置
+        # 自動使用配置文件中的API密鑰和數據庫配置
         db_host = settings.DB_HOST
         db_user = settings.DB_USER
         db_password = settings.DB_PASSWORD
@@ -109,7 +109,7 @@ def main():
         db_port = settings.DB_PORT
         db_charset = settings.DB_CHARSET
 
-        # 创建Settings配置（字段必须用大写，以适配Settings类）
+        # 創建Settings配置（字段必須用大寫，以適配Settings類）
         config = Settings(
             INSIGHT_ENGINE_API_KEY=settings.INSIGHT_ENGINE_API_KEY,
             INSIGHT_ENGINE_BASE_URL=settings.INSIGHT_ENGINE_BASE_URL,
@@ -126,14 +126,14 @@ def main():
             OUTPUT_DIR="insight_engine_streamlit_reports"
         )
 
-        # 执行研究
+        # 執行研究
         execute_research(query, config)
 
 
 def execute_research(query: str, config: Settings):
-    """执行研究"""
+    """執行研究"""
     try:
-        # 创建进度条
+        # 創建進度條
         progress_bar = st.progress(0)
         status_text = st.empty()
 
@@ -144,79 +144,79 @@ def execute_research(query: str, config: Settings):
 
         progress_bar.progress(10)
 
-        # 生成报告结构
-        status_text.text("正在生成报告结构...")
+        # 生成報告結構
+        status_text.text("正在生成報告結構...")
         agent._generate_report_structure(query)
         progress_bar.progress(20)
 
-        # 处理段落
+        # 處理段落
         total_paragraphs = len(agent.state.paragraphs)
         for i in range(total_paragraphs):
-            status_text.text(f"正在处理段落 {i + 1}/{total_paragraphs}: {agent.state.paragraphs[i].title}")
+            status_text.text(f"正在處理段落 {i + 1}/{total_paragraphs}: {agent.state.paragraphs[i].title}")
 
-            # 初始搜索和总结
+            # 初始搜索和總結
             agent._initial_search_and_summary(i)
             progress_value = 20 + (i + 0.5) / total_paragraphs * 60
             progress_bar.progress(int(progress_value))
 
-            # 反思循环
+            # 反思循環
             agent._reflection_loop(i)
             agent.state.paragraphs[i].research.mark_completed()
 
             progress_value = 20 + (i + 1) / total_paragraphs * 60
             progress_bar.progress(int(progress_value))
 
-        # 生成最终报告
-        status_text.text("正在生成最终报告...")
+        # 生成最終報告
+        status_text.text("正在生成最終報告...")
         final_report = agent._generate_final_report()
         progress_bar.progress(90)
 
-        # 保存报告
-        status_text.text("正在保存报告...")
+        # 保存報告
+        status_text.text("正在保存報告...")
         agent._save_report(final_report)
         progress_bar.progress(100)
 
         status_text.text("研究完成！")
 
-        # 显示结果
+        # 顯示結果
         display_results(agent, final_report)
 
     except Exception as e:
         import traceback
         error_traceback = traceback.format_exc()
         error_display = error_with_issue_link(
-            f"研究过程中发生错误: {str(e)}",
+            f"研究過程中發生錯誤: {str(e)}",
             error_traceback,
             app_name="Insight Engine Streamlit App"
         )
         st.error(error_display)
-        logger.exception(f"研究过程中发生错误: {str(e)}")
+        logger.exception(f"研究過程中發生錯誤: {str(e)}")
 
 
 def display_results(agent: DeepSearchAgent, final_report: str):
-    """显示研究结果"""
-    st.header("工作结束")
+    """顯示研究結果"""
+    st.header("工作結束")
 
-    # 结果标签页（已移除下载选项）
-    tab1, tab2 = st.tabs(["研究小结", "引用信息"])
+    # 結果標籤頁（已移除下載選項）
+    tab1, tab2 = st.tabs(["研究小結", "引用信息"])
 
     with tab1:
         st.markdown(final_report)
 
     with tab2:
-        # 段落详情
-        st.subheader("段落详情")
+        # 段落詳情
+        st.subheader("段落詳情")
         for i, paragraph in enumerate(agent.state.paragraphs):
             with st.expander(f"段落 {i + 1}: {paragraph.title}"):
-                st.write("**预期内容:**", paragraph.content)
-                st.write("**最终内容:**", paragraph.research.latest_summary[:300] + "..."
+                st.write("**預期內容:**", paragraph.content)
+                st.write("**最終內容:**", paragraph.research.latest_summary[:300] + "..."
                 if len(paragraph.research.latest_summary) > 300
                 else paragraph.research.latest_summary)
-                st.write("**搜索次数:**", paragraph.research.get_search_count())
-                st.write("**反思次数:**", paragraph.research.reflection_iteration)
+                st.write("**搜索次數:**", paragraph.research.get_search_count())
+                st.write("**反思次數:**", paragraph.research.reflection_iteration)
 
-        # 搜索历史
-        st.subheader("搜索历史")
+        # 搜索歷史
+        st.subheader("搜索歷史")
         all_searches = []
         for paragraph in agent.state.paragraphs:
             all_searches.extend(paragraph.research.search_history)
@@ -225,11 +225,11 @@ def display_results(agent: DeepSearchAgent, final_report: str):
             for i, search in enumerate(all_searches):
                 with st.expander(f"搜索 {i + 1}: {search.query}"):
                     st.write("**URL:**", search.url)
-                    st.write("**标题:**", search.title)
-                    st.write("**内容预览:**",
+                    st.write("**標題:**", search.title)
+                    st.write("**內容預覽:**",
                              search.content[:200] + "..." if len(search.content) > 200 else search.content)
                     if search.score:
-                        st.write("**相关度评分:**", search.score)
+                        st.write("**相關度評分:**", search.score)
 
 
 if __name__ == "__main__":

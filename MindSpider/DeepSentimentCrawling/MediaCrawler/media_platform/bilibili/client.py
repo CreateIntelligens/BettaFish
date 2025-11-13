@@ -1,17 +1,17 @@
-# 声明：本代码仅供学习和研究目的使用。使用者应遵守以下原则：
-# 1. 不得用于任何商业用途。
-# 2. 使用时应遵守目标平台的使用条款和robots.txt规则。
-# 3. 不得进行大规模爬取或对平台造成运营干扰。
-# 4. 应合理控制请求频率，避免给目标平台带来不必要的负担。
-# 5. 不得用于任何非法或不当的用途。
+# 聲明：本代碼僅供學習和研究目的使用。使用者應遵守以下原則：
+# 1. 不得用於任何商業用途。
+# 2. 使用時應遵守目標平臺的使用條款和robots.txt規則。
+# 3. 不得進行大規模爬取或對平臺造成運營幹擾。
+# 4. 應合理控制請求頻率，避免給目標平臺帶來不必要的負擔。
+# 5. 不得用於任何非法或不當的用途。
 #
-# 详细许可条款请参阅项目根目录下的LICENSE文件。
-# 使用本代码即表示您同意遵守上述原则和LICENSE中的所有条款。
+# 詳細許可條款請參閱項目根目錄下的LICENSE文件。
+# 使用本代碼即表示您同意遵守上述原則和LICENSE中的所有條款。
 
 # -*- coding: utf-8 -*-
 # @Author  : relakkes@gmail.com
 # @Time    : 2023/12/2 18:44
-# @Desc    : bilibili 请求客户端
+# @Desc    : bilibili 請求客戶端
 import asyncio
 import json
 import random
@@ -34,7 +34,7 @@ class BilibiliClient(AbstractApiClient):
 
     def __init__(
         self,
-        timeout=60,  # 若开启爬取媒体选项，b 站的长视频需要更久的超时时间
+        timeout=60,  # 若開啓爬取媒體選項，b 站的長視頻需要更久的超時時間
         proxy=None,
         *,
         headers: Dict[str, str],
@@ -63,8 +63,8 @@ class BilibiliClient(AbstractApiClient):
 
     async def pre_request_data(self, req_data: Dict) -> Dict:
         """
-        发送请求进行请求参数签名
-        需要从 localStorage 拿 wbi_img_urls 这参数，值如下：
+        發送請求進行請求參數簽名
+        需要從 localStorage 拿 wbi_img_urls 這參數，值如下：
         https://i0.hdslb.com/bfs/wbi/7cd084941338484aae1ad9425b84077c.png-https://i0.hdslb.com/bfs/wbi/4932caff0ff746eab6f01bf08b70ac45.png
         :param req_data:
         :return:
@@ -76,7 +76,7 @@ class BilibiliClient(AbstractApiClient):
 
     async def get_wbi_keys(self) -> Tuple[str, str]:
         """
-        获取最新的 img_key 和 sub_key
+        獲取最新的 img_key 和 sub_key
         :return:
         """
         local_storage = await self.playwright_page.evaluate("() => window.localStorage")
@@ -141,12 +141,12 @@ class BilibiliClient(AbstractApiClient):
     ) -> Dict:
         """
         KuaiShou web search api
-        :param keyword: 搜索关键词
-        :param page: 分页参数具体第几页
-        :param page_size: 每一页参数的数量
-        :param order: 搜索结果排序，默认位综合排序
-        :param pubtime_begin_s: 发布时间开始时间戳
-        :param pubtime_end_s: 发布时间结束时间戳
+        :param keyword: 搜索關鍵詞
+        :param page: 分頁參數具體第幾頁
+        :param page_size: 每一頁參數的數量
+        :param order: 搜索結果排序，默認位綜合排序
+        :param pubtime_begin_s: 發佈時間開始時間戳
+        :param pubtime_end_s: 發佈時間結束時間戳
         :return:
         """
         uri = "/x/web-interface/wbi/search/type"
@@ -163,13 +163,13 @@ class BilibiliClient(AbstractApiClient):
 
     async def get_video_info(self, aid: Union[int, None] = None, bvid: Union[str, None] = None) -> Dict:
         """
-        Bilibli web video detail api, aid 和 bvid任选一个参数
+        Bilibli web video detail api, aid 和 bvid任選一個參數
         :param aid: 稿件avid
         :param bvid: 稿件bvid
         :return:
         """
         if not aid and not bvid:
-            raise ValueError("请提供 aid 或 bvid 中的至少一个参数")
+            raise ValueError("請提供 aid 或 bvid 中的至少一個參數")
 
         uri = "/x/web-interface/view/detail"
         params = dict()
@@ -187,7 +187,7 @@ class BilibiliClient(AbstractApiClient):
         :return:
         """
         if not aid or not cid or aid <= 0 or cid <= 0:
-            raise ValueError("aid 和 cid 必须存在")
+            raise ValueError("aid 和 cid 必須存在")
         uri = "/x/player/wbi/playurl"
         qn_value = getattr(config, "BILI_QN", 80)
         params = {
@@ -214,7 +214,7 @@ class BilibiliClient(AbstractApiClient):
                 )
                 return None
             except httpx.HTTPError as exc:  # some wrong when call httpx.request method, such as connection error, client error, server error or response status code is not 2xx
-                utils.logger.error(f"[BilibiliClient.get_video_media] {exc.__class__.__name__} for {exc.request.url} - {exc}")  # 保留原始异常类型名称，以便开发者调试
+                utils.logger.error(f"[BilibiliClient.get_video_media] {exc.__class__.__name__} for {exc.request.url} - {exc}")  # 保留原始異常類型名稱，以便開發者調試
                 return None
 
     async def get_video_comments(
@@ -224,9 +224,9 @@ class BilibiliClient(AbstractApiClient):
         next: int = 0,
     ) -> Dict:
         """get video comments
-        :param video_id: 视频 ID
+        :param video_id: 視頻 ID
         :param order_mode: 排序方式
-        :param next: 评论页选择
+        :param next: 評論頁選擇
         :return:
         """
         uri = "/x/v2/reply/wbi/main"
@@ -247,7 +247,7 @@ class BilibiliClient(AbstractApiClient):
         :param crawl_interval:
         :param is_fetch_sub_comments:
         :param callback:
-        max_count: 一次笔记爬取的最大评论数量
+        max_count: 一次筆記爬取的最大評論數量
 
         :return:
         """
@@ -280,7 +280,7 @@ class BilibiliClient(AbstractApiClient):
 
             comment_list: List[Dict] = comments_res.get("replies", [])
 
-            # 检查 is_end 和 next 是否存在
+            # 檢查 is_end 和 next 是否存在
             if "is_end" not in cursor_info or "next" not in cursor_info:
                 utils.logger.warning(f"[BilibiliClient.get_video_all_comments] 'is_end' or 'next' not in cursor for video_id: {video_id}. Assuming end of comments.")
                 is_end = True
@@ -298,7 +298,7 @@ class BilibiliClient(AbstractApiClient):
                         {await self.get_video_all_level_two_comments(video_id, comment_id, CommentOrderType.DEFAULT, 10, crawl_interval, callback)}
             if len(result) + len(comment_list) > max_count:
                 comment_list = comment_list[:max_count - len(result)]
-            if callback:  # 如果有回调函数，就执行回调函数
+            if callback:  # 如果有回調函數，就執行回調函數
                 await callback(video_id, comment_list)
             await asyncio.sleep(crawl_interval)
             if not is_fetch_sub_comments:
@@ -317,10 +317,10 @@ class BilibiliClient(AbstractApiClient):
     ) -> Dict:
         """
         get video all level two comments for a level one comment
-        :param video_id: 视频 ID
-        :param level_one_comment_id: 一级评论 ID
+        :param video_id: 視頻 ID
+        :param level_one_comment_id: 一級評論 ID
         :param order_mode:
-        :param ps: 一页评论数
+        :param ps: 一頁評論數
         :param crawl_interval:
         :param callback:
         :return:
@@ -330,7 +330,7 @@ class BilibiliClient(AbstractApiClient):
         while True:
             result = await self.get_video_level_two_comments(video_id, level_one_comment_id, pn, ps, order_mode)
             comment_list: List[Dict] = result.get("replies", [])
-            if callback:  # 如果有回调函数，就执行回调函数
+            if callback:  # 如果有回調函數，就執行回調函數
                 await callback(video_id, comment_list)
             await asyncio.sleep(crawl_interval)
             if (int(result["page"]["count"]) <= pn * ps):
@@ -347,8 +347,8 @@ class BilibiliClient(AbstractApiClient):
         order_mode: CommentOrderType,
     ) -> Dict:
         """get video level two comments
-        :param video_id: 视频 ID
-        :param level_one_comment_id: 一级评论 ID
+        :param video_id: 視頻 ID
+        :param level_one_comment_id: 一級評論 ID
         :param order_mode: 排序方式
 
         :return:
@@ -367,9 +367,9 @@ class BilibiliClient(AbstractApiClient):
 
     async def get_creator_videos(self, creator_id: str, pn: int, ps: int = 30, order_mode: SearchOrderType = SearchOrderType.LAST_PUBLISH) -> Dict:
         """get all videos for a creator
-        :param creator_id: 创作者 ID
-        :param pn: 页数
-        :param ps: 一页视频数
+        :param creator_id: 創作者 ID
+        :param pn: 頁數
+        :param ps: 一頁視頻數
         :param order_mode: 排序方式
 
         :return:
@@ -402,9 +402,9 @@ class BilibiliClient(AbstractApiClient):
     ) -> Dict:
         """
         get creator fans
-        :param creator_id: 创作者 ID
-        :param pn: 开始页数
-        :param ps: 每页数量
+        :param creator_id: 創作者 ID
+        :param pn: 開始頁數
+        :param ps: 每頁數量
         :return:
         """
         uri = "/x/relation/fans"
@@ -424,9 +424,9 @@ class BilibiliClient(AbstractApiClient):
     ) -> Dict:
         """
         get creator followings
-        :param creator_id: 创作者 ID
-        :param pn: 开始页数
-        :param ps: 每页数量
+        :param creator_id: 創作者 ID
+        :param pn: 開始頁數
+        :param ps: 每頁數量
         :return:
         """
         uri = "/x/relation/followings"
@@ -441,8 +441,8 @@ class BilibiliClient(AbstractApiClient):
     async def get_creator_dynamics(self, creator_id: int, offset: str = ""):
         """
         get creator comments
-        :param creator_id: 创作者 ID
-        :param offset: 发送请求所需参数
+        :param creator_id: 創作者 ID
+        :param offset: 發送請求所需參數
         :return:
         """
         uri = "/x/polymer/web-dynamic/v1/feed/space"
@@ -466,9 +466,9 @@ class BilibiliClient(AbstractApiClient):
         :param creator_info:
         :param crawl_interval:
         :param callback:
-        :param max_count: 一个up主爬取的最大粉丝数量
+        :param max_count: 一個up主爬取的最大粉絲數量
 
-        :return: up主粉丝数列表
+        :return: up主粉絲數列表
         """
         creator_id = creator_info["id"]
         result = []
@@ -480,7 +480,7 @@ class BilibiliClient(AbstractApiClient):
             pn += 1
             if len(result) + len(fans_list) > max_count:
                 fans_list = fans_list[:max_count - len(result)]
-            if callback:  # 如果有回调函数，就执行回调函数
+            if callback:  # 如果有回調函數，就執行回調函數
                 await callback(creator_info, fans_list)
             await asyncio.sleep(crawl_interval)
             if not fans_list:
@@ -500,9 +500,9 @@ class BilibiliClient(AbstractApiClient):
         :param creator_info:
         :param crawl_interval:
         :param callback:
-        :param max_count: 一个up主爬取的最大关注者数量
+        :param max_count: 一個up主爬取的最大關注者數量
 
-        :return: up主关注者列表
+        :return: up主關注者列表
         """
         creator_id = creator_info["id"]
         result = []
@@ -514,7 +514,7 @@ class BilibiliClient(AbstractApiClient):
             pn += 1
             if len(result) + len(followings_list) > max_count:
                 followings_list = followings_list[:max_count - len(result)]
-            if callback:  # 如果有回调函数，就执行回调函数
+            if callback:  # 如果有回調函數，就執行回調函數
                 await callback(creator_info, followings_list)
             await asyncio.sleep(crawl_interval)
             if not followings_list:
@@ -534,9 +534,9 @@ class BilibiliClient(AbstractApiClient):
         :param creator_info:
         :param crawl_interval:
         :param callback:
-        :param max_count: 一个up主爬取的最大动态数量
+        :param max_count: 一個up主爬取的最大動態數量
 
-        :return: up主关注者列表
+        :return: up主關注者列表
         """
         creator_id = creator_info["id"]
         result = []

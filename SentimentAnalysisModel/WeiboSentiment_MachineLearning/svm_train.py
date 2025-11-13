@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-SVM情感分析模型训练脚本
+SVM情感分析模型訓練腳本
 """
 import argparse
 import pandas as pd
@@ -20,19 +20,19 @@ class SVMModel(BaseModel):
         super().__init__("SVM")
         
     def train(self, train_data: List[Tuple[str, int]], **kwargs) -> None:
-        """训练SVM模型
+        """訓練SVM模型
         
         Args:
-            train_data: 训练数据，格式为[(text, label), ...]
-            **kwargs: 其他参数，支持kernel, C等SVM参数
+            train_data: 訓練數據，格式爲[(text, label), ...]
+            **kwargs: 其他參數，支持kernel, C等SVM參數
         """
-        print(f"开始训练 {self.model_name} 模型...")
+        print(f"開始訓練 {self.model_name} 模型...")
         
-        # 准备数据
+        # 準備數據
         df_train = pd.DataFrame(train_data, columns=["words", "label"])
         
-        # 特征编码（TF-IDF模型）
-        print("构建TF-IDF特征...")
+        # 特徵編碼（TF-IDF模型）
+        print("構建TF-IDF特徵...")
         self.vectorizer = TfidfVectorizer(
             token_pattern=r'\[?\w+\]?', 
             stop_words=stopwords
@@ -41,57 +41,57 @@ class SVMModel(BaseModel):
         X_train = self.vectorizer.fit_transform(df_train["words"])
         y_train = df_train["label"]
         
-        print(f"特征维度: {X_train.shape[1]}")
+        print(f"特徵維度: {X_train.shape[1]}")
         
-        # 获取SVM参数
+        # 獲取SVM參數
         kernel = kwargs.get('kernel', 'rbf')
         C = kwargs.get('C', 1.0)
         gamma = kwargs.get('gamma', 'scale')
         
-        # 训练模型
-        print(f"训练SVM分类器 (kernel={kernel}, C={C}, gamma={gamma})...")
+        # 訓練模型
+        print(f"訓練SVM分類器 (kernel={kernel}, C={C}, gamma={gamma})...")
         self.model = svm.SVC(kernel=kernel, C=C, gamma=gamma, probability=True)
         self.model.fit(X_train, y_train)
         
         self.is_trained = True
-        print(f"{self.model_name} 模型训练完成！")
+        print(f"{self.model_name} 模型訓練完成！")
         
     def predict(self, texts: List[str]) -> List[int]:
-        """预测文本情感
+        """預測文本情感
         
         Args:
-            texts: 待预测文本列表
+            texts: 待預測文本列表
             
         Returns:
-            预测结果列表
+            預測結果列表
         """
         if not self.is_trained:
-            raise ValueError(f"模型 {self.model_name} 尚未训练，请先调用train方法")
+            raise ValueError(f"模型 {self.model_name} 尚未訓練，請先調用train方法")
             
-        # 特征转换
+        # 特徵轉換
         X = self.vectorizer.transform(texts)
         
-        # 预测
+        # 預測
         predictions = self.model.predict(X)
         
         return predictions.tolist()
     
     def predict_single(self, text: str) -> Tuple[int, float]:
-        """预测单条文本的情感
+        """預測單條文本的情感
         
         Args:
-            text: 待预测文本
+            text: 待預測文本
             
         Returns:
             (predicted_label, confidence)
         """
         if not self.is_trained:
-            raise ValueError(f"模型 {self.model_name} 尚未训练，请先调用train方法")
+            raise ValueError(f"模型 {self.model_name} 尚未訓練，請先調用train方法")
             
-        # 特征转换
+        # 特徵轉換
         X = self.vectorizer.transform([text])
         
-        # 预测
+        # 預測
         prediction = self.model.predict(X)[0]
         probabilities = self.model.predict_proba(X)[0]
         confidence = max(probabilities)
@@ -100,65 +100,65 @@ class SVMModel(BaseModel):
 
 
 def main():
-    """主函数"""
-    parser = argparse.ArgumentParser(description='SVM情感分析模型训练')
+    """主函數"""
+    parser = argparse.ArgumentParser(description='SVM情感分析模型訓練')
     parser.add_argument('--train_path', type=str, default='./data/weibo2018/train.txt',
-                        help='训练数据路径')
+                        help='訓練數據路徑')
     parser.add_argument('--test_path', type=str, default='./data/weibo2018/test.txt',
-                        help='测试数据路径')
+                        help='測試數據路徑')
     parser.add_argument('--model_path', type=str, default='./model/svm_model.pkl',
-                        help='模型保存路径')
+                        help='模型保存路徑')
     parser.add_argument('--kernel', type=str, default='rbf', choices=['linear', 'poly', 'rbf', 'sigmoid'],
-                        help='SVM核函数类型')
+                        help='SVM核函數類型')
     parser.add_argument('--C', type=float, default=1.0,
-                        help='SVM正则化参数C')
+                        help='SVM正則化參數C')
     parser.add_argument('--gamma', type=str, default='scale',
-                        help='SVM核函数参数gamma')
+                        help='SVM核函數參數gamma')
     parser.add_argument('--eval_only', action='store_true',
-                        help='仅评估已有模型，不进行训练')
+                        help='僅評估已有模型，不進行訓練')
     
     args = parser.parse_args()
     
-    # 创建模型
+    # 創建模型
     model = SVMModel()
     
     if args.eval_only:
-        # 仅评估模式
-        print("评估模式：加载已有模型进行评估")
+        # 僅評估模式
+        print("評估模式：加載已有模型進行評估")
         model.load_model(args.model_path)
         
-        # 加载测试数据
+        # 加載測試數據
         _, test_data = BaseModel.load_data(args.train_path, args.test_path)
         
-        # 评估模型
+        # 評估模型
         model.evaluate(test_data)
     else:
-        # 训练模式
-        # 加载数据
+        # 訓練模式
+        # 加載數據
         train_data, test_data = BaseModel.load_data(args.train_path, args.test_path)
         
-        # 训练模型
+        # 訓練模型
         model.train(train_data, kernel=args.kernel, C=args.C, gamma=args.gamma)
         
-        # 评估模型
+        # 評估模型
         model.evaluate(test_data)
         
         # 保存模型
         model.save_model(args.model_path)
         
-        # 示例预测
-        print("\n示例预测:")
+        # 示例預測
+        print("\n示例預測:")
         test_texts = [
-            "今天天气真好，心情很棒",
-            "这部电影太无聊了，浪费时间",
+            "今天天氣真好，心情很棒",
+            "這部電影太無聊了，浪費時間",
             "哈哈哈，太有趣了"
         ]
         
         for text in test_texts:
             pred, conf = model.predict_single(text)
-            sentiment = "正面" if pred == 1 else "负面"
+            sentiment = "正面" if pred == 1 else "負面"
             print(f"文本: {text}")
-            print(f"预测: {sentiment} (置信度: {conf:.4f})")
+            print(f"預測: {sentiment} (置信度: {conf:.4f})")
             print()
 
 

@@ -1,3 +1,6 @@
+#
+.claude/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -248,6 +251,7 @@ node_modules/
 # *.sqlite
 # *.sqlite3
 # subtitle_db
+db_data/
 
 # ==== UI 和 Web 相关 ====
 # 前端构建文件
