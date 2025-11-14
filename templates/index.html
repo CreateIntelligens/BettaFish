@@ -1549,7 +1549,7 @@
                                 autocomplete="off"
                             >
                         `;
-                        // 眼睛图标 - 闭眼状态（默认隐藏密码）
+                        // 眼睛圖標 - 閉眼狀態（默認隱藏密碼）
                         const eyeOffIcon = `
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                                 <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
@@ -1600,12 +1600,12 @@
             }).join('');
 
             container.innerHTML = sections;
-            // 不再需要每次调用 attachConfigPasswordToggles
-            // 事件委托已在页面初始化时设置
+            // 不再需要每次調用 attachConfigPasswordToggles
+            // 事件委託已在頁面初始化時設置
         }
 
         function attachConfigPasswordToggles() {
-            // 定义眼睛图标的SVG
+            // 定義眼睛圖標的SVG
             const eyeOffIcon = `
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
@@ -1619,19 +1619,19 @@
                 </svg>
             `;
             
-            // 使用事件委托，只在容器上绑定一次事件
+            // 使用事件委託，只在容器上綁定一次事件
             const container = document.getElementById('configFormContainer');
             if (!container) {
                 return;
             }
             
-            // 防止重复绑定
+            // 防止重複綁定
             if (container.dataset.passwordToggleAttached === 'true') {
                 return;
             }
             
             container.addEventListener('click', (event) => {
-                // 查找是否点击了密码切换按钮或其内部的SVG
+                // 查找是否點擊了密碼切換按鈕或其內部的SVG
                 const toggle = event.target.closest('.config-password-toggle');
                 if (!toggle) {
                     return;
@@ -2792,10 +2792,10 @@
                     </div>
                 </div>
 
-                <!-- 控制按钮区域 -->
+                <!-- 控制按鈕區域 -->
                 <div class="report-controls">
-                    <button class="report-button primary" id="generateReportButton">生成最终报告</button>
-                    <button class="report-button" id="downloadReportButton" disabled>下载HTML</button>
+                    <button class="report-button primary" id="generateReportButton">生成最終報告</button>
+                    <button class="report-button" id="downloadReportButton" disabled>下載HTML</button>
                 </div>
                 
                 <!-- 任務進度區域 -->
@@ -2829,12 +2829,12 @@
                 generateButton.dataset.bound = 'true';
                 generateButton.addEventListener('click', () => {
                     if (reportTaskId) {
-                        showMessage('已有报告生成任务在运行', 'info');
+                        showMessage('已有報告生成任務在運行', 'info');
                         return;
                     }
                     const reportButton = document.querySelector('[data-app="report"]');
                     if (reportButton && reportButton.classList.contains('locked')) {
-                        showMessage('需等待三个Agent完成最新分析后才能生成最终报告', 'error');
+                        showMessage('需等待三個Agent完成最新分析後才能生成最終報告', 'error');
                         return;
                     }
                     generateReport();
@@ -2864,12 +2864,12 @@
 
             if (forceLoading || reportTaskId) {
                 if (!generateButton.dataset.originalText) {
-                    generateButton.dataset.originalText = generateButton.textContent || '生成最终报告';
+                    generateButton.dataset.originalText = generateButton.textContent || '生成最終報告';
                 }
                 generateButton.disabled = true;
                 generateButton.textContent = '生成中...';
             } else {
-                const originalText = generateButton.dataset.originalText || '生成最终报告';
+                const originalText = generateButton.dataset.originalText || '生成最終報告';
                 generateButton.disabled = false;
                 generateButton.textContent = originalText;
             }
@@ -2883,14 +2883,14 @@
                 downloadButton.disabled = false;
                 downloadButton.dataset.taskId = task.task_id;
                 downloadButton.dataset.filename = task.report_file_name || '';
-                const label = task.report_file_name ? `下载HTML (${task.report_file_name})` : '下载HTML';
+                const label = task.report_file_name ? `下載HTML (${task.report_file_name})` : '下載HTML';
                 downloadButton.textContent = label;
                 lastCompletedReportTask = task;
             } else if (!lastCompletedReportTask || (task && task.status !== 'completed')) {
                 downloadButton.disabled = true;
                 downloadButton.dataset.taskId = '';
                 downloadButton.dataset.filename = '';
-                downloadButton.textContent = '下载HTML';
+                downloadButton.textContent = '下載HTML';
                 if (!reportTaskId) {
                     lastCompletedReportTask = null;
                 }
@@ -3009,7 +3009,7 @@
                 statusHTML += `
                     <div class="task-info-line">
                         <div class="task-info-item">
-                            <span class="task-info-label">保存路径:</span>
+                            <span class="task-info-label">保存路徑:</span>
                             <span class="task-info-value">${task.report_file_path}</span>
                         </div>
                     </div>
@@ -3027,8 +3027,8 @@
             if (task.status === 'completed') {
                 statusHTML += `
                     <div class="task-actions">
-                        <button class="report-button primary" onclick="viewReport('${task.task_id}')">重新加载</button>
-                        ${task.report_file_ready ? `<button class="report-button" onclick="downloadReport('${task.task_id}')">下载HTML</button>` : ''}
+                        <button class="report-button primary" onclick="viewReport('${task.task_id}')">重新加載</button>
+                        ${task.report_file_ready ? `<button class="report-button" onclick="downloadReport('${task.task_id}')">下載HTML</button>` : ''}
                     </div>
                 `;
             }

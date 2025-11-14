@@ -85,18 +85,18 @@ class LLMClient:
 
     def stream_invoke(self, system_prompt: str, user_prompt: str, **kwargs) -> Generator[str, None, None]:
         """
-        流式调用LLM，逐步返回响应内容
+        流式調用LLM，逐步返回響應內容
         
         Args:
-            system_prompt: 系统提示词
-            user_prompt: 用户提示词
-            **kwargs: 额外参数（temperature, top_p等）
+            system_prompt: 系統提示詞
+            user_prompt: 用戶提示詞
+            **kwargs: 額外參數（temperature, top_p等）
             
         Yields:
-            响应文本块（str）
+            響應文本塊（str）
         """
-        current_time = datetime.now().strftime("%Y年%m月%d日%H时%M分")
-        time_prefix = f"今天的实际时间是{current_time}"
+        current_time = datetime.now().strftime("%Y年%m月%d日%H時%M分")
+        time_prefix = f"今天的實際時間是{current_time}"
         if user_prompt:
             user_prompt = f"{time_prefix}\n{user_prompt}"
         else:
@@ -108,7 +108,7 @@ class LLMClient:
 
         allowed_keys = {"temperature", "top_p", "presence_penalty", "frequency_penalty"}
         extra_params = {key: value for key, value in kwargs.items() if key in allowed_keys and value is not None}
-        # 强制使用流式
+        # 強制使用流式
         extra_params["stream"] = True
 
         timeout = kwargs.pop("timeout", self.timeout)
@@ -127,28 +127,28 @@ class LLMClient:
                     if delta and delta.content:
                         yield delta.content
         except Exception as e:
-            logger.error(f"流式请求失败: {str(e)}")
+            logger.error(f"流式請求失敗: {str(e)}")
             raise e
     
     @with_retry(LLM_RETRY_CONFIG)
     def stream_invoke_to_string(self, system_prompt: str, user_prompt: str, **kwargs) -> str:
         """
-        流式调用LLM并安全地拼接为完整字符串（避免UTF-8多字节字符截断）
+        流式調用LLM並安全地拼接爲完整字符串（避免UTF-8多字節字符截斷）
         
         Args:
-            system_prompt: 系统提示词
-            user_prompt: 用户提示词
-            **kwargs: 额外参数（temperature, top_p等）
+            system_prompt: 系統提示詞
+            user_prompt: 用戶提示詞
+            **kwargs: 額外參數（temperature, top_p等）
             
         Returns:
-            完整的响应字符串
+            完整的響應字符串
         """
-        # 以字节形式收集所有块
+        # 以字節形式收集所有塊
         byte_chunks = []
         for chunk in self.stream_invoke(system_prompt, user_prompt, **kwargs):
             byte_chunks.append(chunk.encode('utf-8'))
         
-        # 拼接所有字节，然后一次性解码
+        # 拼接所有字節，然後一次性解碼
         if byte_chunks:
             return b''.join(byte_chunks).decode('utf-8', errors='replace')
         return ""

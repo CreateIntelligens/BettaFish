@@ -688,7 +688,7 @@ def check_app_status():
                     else:
                         info['status'] = 'starting'
                 except Exception as exc:
-                    logger.warning(f"{app_name} 健康检查失败: {exc}")
+                    logger.warning(f"{app_name} 健康檢查失敗: {exc}")
                     info['status'] = 'starting'
             else:
                 # 進程已結束

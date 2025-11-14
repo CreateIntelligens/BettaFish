@@ -2,8 +2,8 @@ import {defineConfig} from 'vitepress'
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
-    title: "MediaCrawler自媒体爬虫",
-    description: "小红书爬虫，抖音爬虫， 快手爬虫， B站爬虫， 微博爬虫，百度贴吧爬虫，知乎爬虫...。  ",
+    title: "MediaCrawler自媒體爬蟲",
+    description: "小紅書爬蟲，抖音爬蟲， 快手爬蟲， B站爬蟲， 微博爬蟲，百度貼吧爬蟲，知乎爬蟲...。  ",
     lastUpdated: true,
     base: '/MediaCrawler/',
     head: [
@@ -29,54 +29,54 @@ export default defineConfig({
         },
         // https://vitepress.dev/reference/default-theme-config
         nav: [
-            {text: '首页', link: '/'},
-            {text: '联系我', link: '/作者介绍'},
-            {text: '支持我', link: '/知识付费介绍'},
+            {text: '首頁', link: '/'},
+            {text: '聯繫我', link: '/作者介紹'},
+            {text: '支持我', link: '/知識付費介紹'},
         ],
 
         sidebar: [
             {
-                text: '作者介绍',
-                link: '/作者介绍',
+                text: '作者介紹',
+                link: '/作者介紹',
             },
             {
-                text: 'MediaCrawler使用文档',
+                text: 'MediaCrawler使用文檔',
                 items: [
                     {text: '基本使用', link: '/'},
-                    {text: '常见问题汇总', link: '/常见问题'},
+                    {text: '常見問題彙總', link: '/常見問題'},
                     {text: 'IP代理使用', link: '/代理使用'},
-                    {text: '词云图使用', link: '/词云图使用配置'},
-                    {text: '项目目录结构', link: '/项目代码结构'},
-                    {text: '手机号登录说明', link: '/手机号登录说明'},
+                    {text: '詞雲圖使用', link: '/詞雲圖使用配置'},
+                    {text: '項目目錄結構', link: '/項目代碼結構'},
+                    {text: '手機號登錄說明', link: '/手機號登錄說明'},
                 ]
             },
             {
-                text: '知识付费',
+                text: '知識付費',
                 items: [
-                    {text: '知识付费介绍', link: '/知识付费介绍'},
-                    {text: 'MediaCrawlerPro订阅', link: '/mediacrawlerpro订阅'},
+                    {text: '知識付費介紹', link: '/知識付費介紹'},
+                    {text: 'MediaCrawlerPro訂閱', link: '/mediacrawlerpro訂閱'},
                     {
-                        text: 'MediaCrawler源码剖析课',
+                        text: 'MediaCrawler源碼剖析課',
                         link: 'https://relakkes.feishu.cn/wiki/JUgBwdhIeiSbAwkFCLkciHdAnhh'
                     },
-                    {text: '知识星球文章专栏', link: '/知识星球介绍'},
-                    {text: '开发者咨询服务', link: '/开发者咨询'},
+                    {text: '知識星球文章專欄', link: '/知識星球介紹'},
+                    {text: '開發者諮詢服務', link: '/開發者諮詢'},
                 ]
             },
             {
-                text: 'MediaCrawler项目交流群',
-                link: '/微信交流群',
+                text: 'MediaCrawler項目交流羣',
+                link: '/微信交流羣',
             },
             {
-                text: '爬虫入门教程分享',
+                text: '爬蟲入門教程分享',
                 items: [
-                    {text: "我写的爬虫入门教程", link: 'https://github.com/NanmiCoder/CrawlerTutorial'}
+                    {text: "我寫的爬蟲入門教程", link: 'https://github.com/NanmiCoder/CrawlerTutorial'}
                 ]
             },
             {
-                text: 'MediaCrawler捐赠名单',
+                text: 'MediaCrawler捐贈名單',
                 items: [
-                    {text: "捐赠名单", link: '/捐赠名单'}
+                    {text: "捐贈名單", link: '/捐贈名單'}
                 ]
             },
 

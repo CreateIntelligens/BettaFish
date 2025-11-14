@@ -185,7 +185,7 @@ class MediaCrawlerDB:
         return DBResponse("search_hot_content", params_for_log, results=formatted_results, results_count=len(formatted_results))    
 
     def _wrap_query_field_with_dialect(self, field: str) -> str:
-        """根据数据库方言包装SQL查询"""
+        """根據數據庫方言包裝SQL查詢"""
         if settings.DB_DIALECT == 'postgresql':
             return f'"{field}"'
         return f'`{field}`'

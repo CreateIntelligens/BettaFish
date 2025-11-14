@@ -1,133 +1,160 @@
-# BettaFish - 繁體中文優化分支
-
-## 📢 致謝
-
-本專案為 [666ghj/BettaFish](https://github.com/666ghj/BettaFish) 的個人優化分支。
-
-**特別感謝原作者 [@666ghj](https://github.com/666ghj) 創建並維護這個優秀的多智能體輿情分析系統！**
-
-**完整的專案說明、架構介紹與使用指南，請參閱原專案的 [官方 README](https://github.com/666ghj/BettaFish/blob/main/README.md)**
-
----
-
-## 🎯 本分支的主要改進
-
-本 Fork 版本基於原專案進行了以下優化：
-
-### 系統穩定性改進
-- ✅ **修復 logger 相關的 AttributeError**：解決 `ReportEngine/agent.py` 中的 logger 引用問題
-- ✅ **整合 upstream 的最新改進**：
-  - 流式 LLM 調用（`stream_invoke_to_string`）以改善 UTF-8 處理
-  - ForumEngine 的 ERROR 塊過濾機制
-  - 增強的節點識別模式（支持多種格式）
-  - 改進的配置管理系統（`reload_settings()`）
-
-### 配置優化
-- ✅ **Docker Compose 改進**：保留 GPU 配置同時支持環境變量設定
-- ✅ **健康檢查優化**：統一的健康檢查 URL 構建與代理設定
-- ✅ **更長的超時設置**：調整 ForumEngine 的無活動超時時間
-
----
-
-## 🚀 快速開始
-
-### 環境需求
-- Python 3.10+
-- PostgreSQL 15+
-- Docker & Docker Compose（可選）
-
-<<<<<<< ours
-### 安裝步驟
-||||||| base
-**运行命令：** 执行以下命令在**后台**启动所有服务：
-=======
-复制一份 `.env.example` 文件，命名为 `.env` ，并按需配置 `.env` 文件中的环境变量
-
-执行以下命令在后台启动所有服务：
->>>>>>> theirs
-
-1. **克隆本分支**
-```bash
-git clone https://github.com/YOUR_USERNAME/BettaFish.git
-cd BettaFish
-```
-
-2. **配置環境變量**
-```bash
-cp .env.example .env
-# 編輯 .env 填入您的 API 金鑰與配置
-```
-
-3. **使用 Docker Compose 啟動（推薦）**
-```bash
-docker-compose up -d
-```
-
-4. **或手動安裝**
-```bash
-pip install -r requirements.txt
-python app.py
-```
-
-5. **訪問系統**
-打開瀏覽器訪問 `http://localhost:5000`
-
----
-
-## 📋 主要差異對照
-
-| 項目 | 原專案 | 本分支 |
-|------|--------|--------|
-| 語言 | 簡體中文 | 繁體中文 |
-| Logger 修復 | - | ✅ 已修復 |
-| 流式 LLM | 部分支持 | ✅ 全面整合 |
-| ForumEngine ERROR 過濾 | - | ✅ 已整合 |
-| 配置管理 | 基礎版本 | ✅ reload_settings() |
-
----
-
-## 🔄 與原專案同步
-
-本分支會定期與上游專案同步最新功能：
-
-```bash
-# 添加原專案為 upstream
-git remote add upstream https://github.com/666ghj/BettaFish.git
-
-# 拉取最新變更
-git fetch upstream
-git merge upstream/main
-```
-
----
-
-## 📚 詳細文檔
-
-- **完整功能說明**：請參閱 [原專案 README](https://github.com/666ghj/BettaFish/blob/main/README.md)
-- **系統架構**：請參閱 [原專案架構圖](https://github.com/666ghj/BettaFish#%EF%B8%8F-系統架構)
-- **安裝指南**：請參閱 [原專案安裝文檔](https://github.com/666ghj/BettaFish#-快速開始)
-
----
-
-## 📝 授權條款
-
-本專案遵循與原專案相同的授權條款。詳見 [LICENSE](./LICENSE)
-
----
-
-## 🙏 再次感謝
-
-再次感謝 [@666ghj](https://github.com/666ghj) 與所有為 BettaFish 專案做出貢獻的開發者！
-
-如果您覺得這個專案有幫助，請：
-- ⭐ 給原專案 [666ghj/BettaFish](https://github.com/666ghj/BettaFish) 一個 Star
-- 💬 加入原專案的技術交流群
-- 🤝 參與原專案的開發與討論
-
----
+# BettaFish · 多智能體輿情分析系統（繁體中文增強版）
 
 <div align="center">
+  <img src="static/image/logo_compressed.png" alt="BettaFish Logo" width="420" />
+  <p>Break the echo chamber · Restore real public sentiment</p>
+  <a href="https://github.com/CreateIntelligens/BettaFish">Fork 自 666ghj/BettaFish</a>
+</div>
 
-**原專案連結**：[https://github.com/666ghj/BettaFish](https://github.com/666ghj/BettaFish)
+---
 
+## 目錄
+
+- [專案簡介](#專案簡介)
+- [核心能力地圖](#核心能力地圖)
+- [系統運作流程](#系統運作流程)
+- [專案結構](#專案結構)
+- [快速開始](#快速開始)
+- [環境與機密設定](#環境與機密設定)
+- [常見操作與工具](#常見操作與工具)
+- [疑難排解](#疑難排解)
+- [授權與致謝](#授權與致謝)
+
+---
+
+## 專案簡介
+
+**BettaFish** 是一套由多個 AI Agent 協作完成的輿情洞察系統。透過 Query / Media / Insight / Report 四大引擎與 Forum 協作框架，可自動巡檢 30+ 國內外主流社羣平臺與媒體站點，整合文字、圖片、影音與結構化資料，輸出決策級報告。
+
+> Betta 代表「小而強韌、無懼挑戰」，象徵本系統即使部署在個人或企業私有環境，也能具備企業級的洞察戰鬥力。
+
+閱讀系統示例報告：`final_reports/final_report__20250827_131630.html`
+
+---
+
+## 核心能力地圖
+
+| Agent | 主要任務 | 特色工具 | 典型輸出 |
+| --- | --- | --- | --- |
+| **QueryEngine** | 以關鍵字策略搜尋國內外熱點 | 多搜尋供應商、結果去重、反思迭代 | 話題脈絡、媒體觀點、時間線 |
+| **MediaEngine** | 多模態深度理解短影片與圖文 | 視訊轉寫、畫面標註、結構化卡片抽取 | 影音摘要、情緒極化指標 |
+| **InsightEngine** | 私有資料庫探勘與交叉分析 | Qwen 關鍵字強化、情感模型、SQL 搜尋 | 深度洞察、私域 FAQ |
+| **ReportEngine** | 多輪報告生成與排版 | 範本庫、模板選擇器、HTML Render | 最終 HTML 報告 (支援客製風格) |
+| **ForumEngine** | Agent 辯論/協調機制 | 主持人 LLM、節點監看、log diff | 回合摘要、策略調整建議 |
+| **MindSpider** | 微博等社羣爬蟲 | 熱榜提取、深度情感、平臺驅動 | 結構化貼文/評論資料 |
+| **SentimentAnalysisModel** | 多種情感模型集合 | BERT、GPT-2、Qwen、傳統 ML | 置信度標註、語言自動判斷 |
+
+---
+
+## 系統運作流程
+
+1. **使用者提問**：Flask 主應用接收需求與查詢條件。
+2. **三引擎並行**：Query / Media / Insight 同步啟動，先行產出初步觀測。
+3. **策略會議**：透過 ForumEngine 主持人，依回應品質調整搜尋策略。
+4. **多輪研究**：各 Agent 以 think-reflect 模式進行深挖，必要時調用私有數據或外部爬蟲。
+5. **資訊彙整**：ReportEngine 拉取所有 Agent 輸出、論壇紀要與外部附件。
+6. **報告生成**：多輪挑選適合模板、先生成大綱，再輸出完整 HTML 與媒體資產。
+7. **交付決策**：最終報告寫入 `final_reports/` 並透過前端介面呈現。
+
+---
+
+## 專案結構
+
+```
+BettaFish/
+├── app.py                      # Flask 主系統入口
+├── config.py                   # 全域設定（含 .env 載入）
+├── QueryEngine/                # 國際新聞/論壇蒐集 Agent
+├── MediaEngine/                # 多模態內容理解 Agent
+├── InsightEngine/              # 私域資料庫探勘 Agent
+├── ReportEngine/               # 報告產生與模板系統
+├── ForumEngine/                # Agent 論壇協作模組
+├── MindSpider/                 # 爬蟲系統（微博等）
+├── SentimentAnalysisModel/     # 情感分析模型集合
+├── SingleEngineApp/            # 各 Agent 的 Streamlit Demo
+├── templates/ & static/        # Flask 前端資源
+├── final_reports/              # HTML 成品報告輸出
+├── scripts/                    # 維運腳本 & 工具
+└── requirements.txt            # 依賴清單
+```
+
+---
+
+## 快速開始
+
+### 環境需求
+
+- OS：Linux / macOS / Windows 均可
+- Python：3.10 以上 (建議 3.11)
+- DB：PostgreSQL 15 (預設)；亦支援 MySQL
+- 其他：Docker 24+（可選）、Playwright、Conda 或 uv、2GB+ RAM
+
+### A. Docker Compose（推薦）
+
+```bash
+git clone https://github.com/CreateIntelligens/BettaFish.git
+cd BettaFish
+cp .env.example .env      # 填入 LLM / DB / Proxy 設定
+docker compose up -d      # 首次啟動會自動建置映像
+```
+
+- 鏡像拉取過慢可改用 `docker-compose.yml` 內已註解的鏡像地址。
+- `http://localhost:8903` 為預設入口，由 nginx 反向代理 Flask 與各 Agent 服務；健康檢查與代理設定自動套用 env。
+
+## 環境與機密設定
+
+### 必填 .env 參數速覽
+
+| 類別 | 主要參數 | 說明 |
+| --- | --- | --- |
+| 資料庫 | `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, `DB_DIALECT` | 預設 PostgreSQL，若改 MySQL 請同步調整 port 與字元集 |
+| Insight Agent | `INSIGHT_ENGINE_API_KEY`, `INSIGHT_ENGINE_BASE_URL`, `INSIGHT_ENGINE_MODEL_NAME` | 支援任何 OpenAI 格式 API，如 Kimi、DeepSeek、SiliconFlow |
+| Media Agent | `MEDIA_ENGINE_API_KEY`, `MEDIA_ENGINE_BASE_URL`, `MEDIA_ENGINE_MODEL_NAME` | 影片/圖片理解建議使用多模態模型 |
+| Query Agent | `QUERY_ENGINE_API_KEY`, `QUERY_ENGINE_BASE_URL`, `QUERY_ENGINE_MODEL_NAME` | 可切換至最擅長搜尋解讀的模型 |
+| Report Agent | `REPORT_ENGINE_API_KEY`, `REPORT_ENGINE_BASE_URL`, `REPORT_ENGINE_MODEL_NAME` | 決策報告建議使用長文本推理模型 |
+| 其他 | `PROXY`, `REQUEST_TIMEOUT`, `ENABLE_STREAMING`, `FORUM_HOST_MODEL` | 可依內網環境與成本調整 |
+
+
+### 進階調校
+
+- `QueryEngine/utils/config.py`：調整反思輪數 (`max_reflections`)、搜尋結果數 (`max_search_results`)。
+- `MediaEngine/utils/config.py`：設定多模態搜尋範圍 (`comprehensive_search_limit`)。
+- `InsightEngine/tools/sentiment_analyzer.py`：切換情感模型、`confidence_threshold` 等。
+- `ForumEngine/monitor.py`：可依團隊需求調整論壇回合上限與空閒時間。
+
+---
+
+## 常見操作與工具
+
+### MindSpider 爬蟲
+
+```bash
+cd MindSpider
+python main.py --setup                     # 初始化資料庫
+python main.py --broad-topic               # 提取熱榜與關鍵詞
+python main.py --complete --date 2024-01-20
+python main.py --deep-sentiment --platforms xhs dy wb
+```
+
+### 報告輸出
+
+- 報告預設儲存於 `final_reports/`，檔名含時間戳。
+- 可透過 `ReportEngine/report_template/` 自訂中文或產業專屬模板。
+- 若需自動寄送，可在 `ReportEngine/flask_interface.py` 加入 webhook 或郵件邏輯。
+
+### 日誌與監控
+
+- 所有 Agent log 依模組分流存於 `logs/`。
+- ForumEngine 會將每輪會議摘要寫入同目錄下的 `forum` log，方便追溯。
+- 若需集中式監控，可將 log 目錄掛載到 ELK / Loki。 
+
+---
+
+## 授權與致謝
+
+- 本專案延續原始倉庫 [LICENSE](./LICENSE) 規範。
+- 特別感謝原作者 [@666ghj](https://github.com/666ghj) 以及所有貢獻者打造出強大的 BettaFish 生態。
+
+<div align="center">
+  <strong>原倉庫連結：</strong> https://github.com/666ghj/BettaFish
 </div>

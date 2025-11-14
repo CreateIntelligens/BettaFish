@@ -779,5 +779,5 @@ def create_agent(config_file: Optional[str] = None) -> DeepSearchAgent:
     Returns:
         DeepSearchAgent實例
     """
-    config = Settings() # 以空配置初始化，而从从环境变量初始化
+    config = Settings() # 以空配置初始化，而從從環境變量初始化
     return DeepSearchAgent(config)

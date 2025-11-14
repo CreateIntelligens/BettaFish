@@ -172,7 +172,7 @@ def get_status():
             'current_task': current_task.to_dict() if current_task else None
         })
     except Exception as e:
-        logger.exception(f"获取Report Engine状态失败: {str(e)}")
+        logger.exception(f"獲取Report Engine狀態失敗: {str(e)}")
         return jsonify({
             'success': False,
             'error': str(e)
@@ -245,7 +245,7 @@ def generate_report():
         })
 
     except Exception as e:
-        logger.exception(f"开始生成报告失败: {str(e)}")
+        logger.exception(f"開始生成報告失敗: {str(e)}")
         return jsonify({
             'success': False,
             'error': str(e)
@@ -340,7 +340,7 @@ def get_result_json(task_id: str):
         })
 
     except Exception as e:
-        logger.exception(f"获取报告生成结果失败: {str(e)}")
+        logger.exception(f"獲取報告生成結果失敗: {str(e)}")
         return jsonify({
             'success': False,
             'error': str(e)
@@ -349,24 +349,24 @@ def get_result_json(task_id: str):
 
 @report_bp.route('/download/<task_id>', methods=['GET'])
 def download_report(task_id: str):
-    """下载已生成的报告HTML文件"""
+    """下載已生成的報告HTML文件"""
     try:
         if not current_task or current_task.task_id != task_id:
             return jsonify({
                 'success': False,
-                'error': '任务不存在'
+                'error': '任務不存在'
             }), 404
 
         if current_task.status != "completed" or not current_task.report_file_path:
             return jsonify({
                 'success': False,
-                'error': '报告尚未完成或尚未保存'
+                'error': '報告尚未完成或尚未保存'
             }), 400
 
         if not os.path.exists(current_task.report_file_path):
             return jsonify({
                 'success': False,
-                'error': '报告文件不存在或已被删除'
+                'error': '報告文件不存在或已被刪除'
             }), 404
 
         download_name = current_task.report_file_name or os.path.basename(current_task.report_file_path)
@@ -378,7 +378,7 @@ def download_report(task_id: str):
         )
 
     except Exception as e:
-        logger.exception(f"下载报告失败: {str(e)}")
+        logger.exception(f"下載報告失敗: {str(e)}")
         return jsonify({
             'success': False,
             'error': str(e)
@@ -408,7 +408,7 @@ def cancel_task(task_id: str):
                 }), 404
 
     except Exception as e:
-        logger.exception(f"取消报告生成任务失败: {str(e)}")
+        logger.exception(f"取消報告生成任務失敗: {str(e)}")
         return jsonify({
             'success': False,
             'error': str(e)
@@ -452,7 +452,7 @@ def get_templates():
         })
 
     except Exception as e:
-        logger.exception(f"获取可用模板列表失败: {str(e)}")
+        logger.exception(f"獲取可用模板列表失敗: {str(e)}")
         return jsonify({
             'success': False,
             'error': str(e)
@@ -462,7 +462,7 @@ def get_templates():
 # 錯誤處理
 @report_bp.errorhandler(404)
 def not_found(error):
-    logger.exception(f"API端点不存在: {str(error)}")
+    logger.exception(f"API端點不存在: {str(error)}")
     return jsonify({
         'success': False,
         'error': 'API端點不存在'
@@ -471,7 +471,7 @@ def not_found(error):
 
 @report_bp.errorhandler(500)
 def internal_error(error):
-    logger.exception(f"服务器内部错误: {str(error)}")
+    logger.exception(f"服務器內部錯誤: {str(error)}")
     return jsonify({
         'success': False,
         'error': '服務器內部錯誤'

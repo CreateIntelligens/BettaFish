@@ -219,15 +219,15 @@ class LogMonitor:
         """
         stripped = line.strip()
         
-        # 如果行包含时间戳（旧格式或新格式），说明不是纯粹的结束行
-        # 旧格式：[HH:MM:SS]
+        # 如果行包含時間戳（舊格式或新格式），說明不是純粹的結束行
+        # 舊格式：[HH:MM:SS]
         if re.match(r'^\[\d{2}:\d{2}:\d{2}\]', stripped):
             return False
         # 新格式：YYYY-MM-DD HH:mm:ss.SSS
         if re.match(r'^\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}\.\d{3}', stripped):
             return False
         
-        # 不包含时间戳的行，检查是否是纯结束标记
+        # 不包含時間戳的行，檢查是否是純結束標記
         if stripped == "}" or stripped == "] }":
             return True
         return False
@@ -275,7 +275,7 @@ class LogMonitor:
                 # 移除時間戳：支持舊格式 [HH:MM:SS] 和新格式 loguru (YYYY-MM-DD HH:mm:ss.SSS | LEVEL | ...)
                 # 舊格式：[HH:MM:SS]
                 clean_line = re.sub(r'^\[\d{2}:\d{2}:\d{2}\]\s*', '', line)
-                # 新格式：移除 loguru 格式的时间戳和级别信息
+                # 新格式：移除 loguru 格式的時間戳和級別信息
                 # 格式: YYYY-MM-DD HH:mm:ss.SSS | LEVEL | module:function:line -
                 clean_line = re.sub(r'^\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}\.\d{3}\s*\|\s*[A-Z]+\s*\|\s*[^|]+?\s*-\s*', '', clean_line)
                 json_text += clean_line
@@ -440,29 +440,29 @@ class LogMonitor:
             if not line.strip():
                 continue
             
-            # 首先检查日志级别，更新ERROR块状态
+            # 首先檢查日誌級別，更新ERROR塊狀態
             log_level = self.get_log_level(line)
             if log_level == 'ERROR':
-                # 遇到ERROR，进入ERROR块状态
+                # 遇到ERROR，進入ERROR塊狀態
                 self.in_error_block[app_name] = True
-                # 如果正在捕获JSON，立即停止并清空缓冲区
+                # 如果正在捕獲JSON，立即停止並清空緩衝區
                 if self.capturing_json[app_name]:
                     self.capturing_json[app_name] = False
                     self.json_buffer[app_name] = []
-                # 跳过当前行，不处理
+                # 跳過當前行，不處理
                 continue
             elif log_level == 'INFO':
-                # 遇到INFO，退出ERROR块状态
+                # 遇到INFO，退出ERROR塊狀態
                 self.in_error_block[app_name] = False
-            # 其他级别（WARNING、DEBUG等）保持当前状态
+            # 其他級別（WARNING、DEBUG等）保持當前狀態
             
-            # 如果在ERROR块中，拒绝处理所有内容
+            # 如果在ERROR塊中，拒絕處理所有內容
             if self.in_error_block[app_name]:
-                # 如果正在捕获JSON，立即停止并清空缓冲区
+                # 如果正在捕獲JSON，立即停止並清空緩衝區
                 if self.capturing_json[app_name]:
                     self.capturing_json[app_name] = False
                     self.json_buffer[app_name] = []
-                # 跳过当前行，不处理
+                # 跳過當前行，不處理
                 continue
                 
             # 檢查是否是目標節點行和JSON開始標記

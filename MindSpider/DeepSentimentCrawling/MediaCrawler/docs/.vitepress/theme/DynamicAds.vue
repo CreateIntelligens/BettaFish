@@ -1,4 +1,4 @@
-<!-- 在vitepress右侧的目录导航中插入动态广告组件-->
+<!-- 在vitepress右側的目錄導航中插入動態廣告組件-->
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
@@ -13,7 +13,7 @@ const fetchAds = async () => {
       id: 1,
       imageUrl: 'https://github.com/NanmiCoder/MediaCrawler/raw/main/docs/static/images/auto_test.png',
       landingUrl: 'https://item.jd.com/10124939676219.html',
-      text: '给好朋友虫师新书站台推荐 - 基于Python的自动化测试框架设计'
+      text: '給好朋友蟲師新書站臺推薦 - 基於Python的自動化測試框架設計'
     }
   ]
 }
