@@ -28,12 +28,12 @@ class Settings(BaseSettings):
     變量名與原 config.py 大寫一致，便於平滑過渡。
     """
     # ================== Flask 服務器配置 ====================
-    HOST: str = Field("0.0.0.0", description="Flask服務器主機地址，默認0.0.0.0（允許外部訪問）")
+    HOST: str = Field("0.0.0.0", description="BETTAFISH 主機地址，例如 0.0.0.0 或 127.0.0.1")
     PORT: int = Field(5000, description="Flask服務器端口號，默認5000")
 
     # ====================== 數據庫配置 ======================
-    DB_DIALECT: str = Field("mysql", description="數據庫類型，例如 'mysql' 或 'postgresql'。用於支持多種數據庫後端（如 SQLAlchemy，請與連接信息共同配置）")
-    DB_HOST: str = Field("your_db_host", description="數據庫主機，例如localhost 或 127.0.0.1。我們也提供雲數據庫資源便捷配置，日均10w+數據，可免費申請，聯繫我們：670939375@qq.com NOTE：為進行數據合規性審查與服務升級，雲數據庫自2025年10月1日起暫停接收新的使用申請")
+    DB_DIALECT: str = Field("postgresql", description="數據庫類型，可選 mysql 或 postgresql；請與其他連接信息同時配置")
+    DB_HOST: str = Field("your_db_host", description="數據庫主機，例如localhost 或 127.0.0.1")
     DB_PORT: int = Field(3306, description="數據庫端口號，默認為3306")
     DB_USER: str = Field("your_db_user", description="數據庫用戶名")
     DB_PASSWORD: str = Field("your_db_password", description="數據庫密碼")
@@ -44,34 +44,39 @@ class Settings(BaseSettings):
     # 我們的LLM模型API贊助商有：https://share.302.ai/P66Qe3、https://aihubmix.com/?aff=8Ds9，提供了非常全面的模型api
 
     # Insight Agent（推薦Kimi，申請地址：https://platform.moonshot.cn/）
-    INSIGHT_ENGINE_API_KEY: Optional[str] = Field(None, description="Insight Agent（推薦Kimi，https://platform.moonshot.cn/）API密鑰，用於主LLM。您可以更改每個部分LLM使用的API，🚩只要兼容OpenAI請求格式都可以，定義好KEY、BASE_URL與MODEL_NAME即可正常使用。重要提醒：我們強烈推薦您先使用推薦的配置申請API，先跑通再進行您的更改！")
-    INSIGHT_ENGINE_BASE_URL: Optional[str] = Field("https://api.moonshot.cn/v1", description="Insight Agent LLM接口BaseUrl，可自定義廠商API")
-    INSIGHT_ENGINE_MODEL_NAME: str = Field("kimi-k2-0711-preview", description="Insight Agent LLM模型名稱，如kimi-k2-0711-preview")
-    
+    INSIGHT_ENGINE_API_KEY: Optional[str] = Field(None, description="Insight Agent（推薦 kimi-k2，官方申請地址：https://platform.moonshot.cn/）API 密鑰，用於主 LLM。🚩請先按推薦配置申請並跑通，再根據需要調整 KEY、BASE_URL 與 MODEL_NAME。")
+    INSIGHT_ENGINE_BASE_URL: Optional[str] = Field("https://api.moonshot.cn/v1", description="Insight Agent LLM BaseUrl，可根據廠商自定義")
+    INSIGHT_ENGINE_MODEL_NAME: str = Field("kimi-k2-0711-preview", description="Insight Agent LLM 模型名稱，例如 kimi-k2-0711-preview")
+
     # Media Agent（推薦Gemini，推薦中轉廠商：https://aihubmix.com/?aff=8Ds9）
-    MEDIA_ENGINE_API_KEY: Optional[str] = Field(None, description="Media Agent（推薦Gemini，推薦中轉api廠商：https://aihubmix.com/?aff=8Ds9")
-    MEDIA_ENGINE_BASE_URL: Optional[str] = Field("https://aihubmix.com/v1", description="Media Agent LLM接口BaseUrl")
-    MEDIA_ENGINE_MODEL_NAME: str = Field("gemini-2.5-pro", description="Media Agent LLM模型名稱，如gemini-2.5-pro")
-    
+    MEDIA_ENGINE_API_KEY: Optional[str] = Field(None, description="Media Agent（推薦 Gemini-2.5-pro，中轉廠商申請地址：https://aihubmix.com/?aff=8Ds9）API 密鑰")
+    MEDIA_ENGINE_BASE_URL: Optional[str] = Field("https://aihubmix.com/v1", description="Media Agent LLM BaseUrl，可根據中轉服務調整")
+    MEDIA_ENGINE_MODEL_NAME: str = Field("gemini-2.5-pro", description="Media Agent LLM 模型名稱，如 gemini-2.5-pro")
+
     # Query Agent（推薦DeepSeek，申請地址：https://www.deepseek.com/）
-    QUERY_ENGINE_API_KEY: Optional[str] = Field(None, description="Query Agent（推薦DeepSeek，https://www.deepseek.com/）API密鑰")
-    QUERY_ENGINE_BASE_URL: Optional[str] = Field("https://api.deepseek.com", description="Query Agent LLM接口BaseUrl")
-    QUERY_ENGINE_MODEL_NAME: str = Field("deepseek-reasoner", description="Query Agent LLM模型，如deepseek-reasoner")
-    
+    QUERY_ENGINE_API_KEY: Optional[str] = Field(None, description="Query Agent（推薦 DeepSeek，官方申請地址：https://platform.deepseek.com/）API 密鑰")
+    QUERY_ENGINE_BASE_URL: Optional[str] = Field("https://api.deepseek.com", description="Query Agent LLM BaseUrl")
+    QUERY_ENGINE_MODEL_NAME: str = Field("deepseek-chat", description="Query Agent LLM 模型名稱，如 deepseek-reasoner")
+
     # Report Agent（推薦Gemini，推薦中轉廠商：https://aihubmix.com/?aff=8Ds9）
-    REPORT_ENGINE_API_KEY: Optional[str] = Field(None, description="Report Agent（推薦Gemini，推薦中轉api廠商：https://aihubmix.com/?aff=8Ds9")
-    REPORT_ENGINE_BASE_URL: Optional[str] = Field("https://aihubmix.com/v1", description="Report Agent LLM接口BaseUrl")
-    REPORT_ENGINE_MODEL_NAME: str = Field("gemini-2.5-pro", description="Report Agent LLM模型，如gemini-2.5-pro")
-    
-    # Forum Host（Qwen3最新模型，這裏我使用了硅基流動這個平臺，申請地址：https://cloud.siliconflow.cn/）
-    FORUM_HOST_API_KEY: Optional[str] = Field(None, description="Forum Host（Qwen3最新模型，這裏我使用了硅基流動這個平臺，申請地址：https://cloud.siliconflow.cn/）API密鑰")
-    FORUM_HOST_BASE_URL: Optional[str] = Field("https://api.siliconflow.cn/v1", description="Forum Host LLM BaseUrl")
-    FORUM_HOST_MODEL_NAME: str = Field("Qwen/Qwen3-235B-A22B-Instruct-2507", description="Forum Host LLM模型名，如Qwen/Qwen3-235B-A22B-Instruct-2507")
-    
-    # SQL keyword Optimizer（小參數Qwen3模型，這裏我使用了硅基流動這個平臺，申請地址：https://cloud.siliconflow.cn/）
-    KEYWORD_OPTIMIZER_API_KEY: Optional[str] = Field(None, description="SQL keyword Optimizer（小參數Qwen3模型，這裏我使用了硅基流動這個平臺，申請地址：https://cloud.siliconflow.cn/）API密鑰")
-    KEYWORD_OPTIMIZER_BASE_URL: Optional[str] = Field("https://api.siliconflow.cn/v1", description="Keyword Optimizer BaseUrl")
-    KEYWORD_OPTIMIZER_MODEL_NAME: str = Field("Qwen/Qwen3-30B-A3B-Instruct-2507", description="Keyword Optimizer LLM模型名稱，如Qwen/Qwen3-30B-A3B-Instruct-2507")
+    REPORT_ENGINE_API_KEY: Optional[str] = Field(None, description="Report Agent（推薦 Gemini-2.5-pro，中轉廠商申請地址：https://aihubmix.com/?aff=8Ds9）API 密鑰")
+    REPORT_ENGINE_BASE_URL: Optional[str] = Field("https://aihubmix.com/v1", description="Report Agent LLM BaseUrl，可根據中轉服務調整")
+    REPORT_ENGINE_MODEL_NAME: str = Field("gemini-2.5-pro", description="Report Agent LLM 模型名稱，如 gemini-2.5-pro")
+
+    # MindSpider Agent（推薦Deepseek，官方申請地址：https://platform.deepseek.com/）
+    MINDSPIDER_API_KEY: Optional[str] = Field(None, description="MindSpider Agent（推薦 DeepSeek，官方申請地址：https://platform.deepseek.com/）API 密鑰")
+    MINDSPIDER_BASE_URL: Optional[str] = Field(None, description="MindSpider Agent BaseUrl，可按所選服務配置")
+    MINDSPIDER_MODEL_NAME: Optional[str] = Field(None, description="MindSpider Agent 模型名稱，例如 deepseek-reasoner")
+
+    # Forum Host（推薦qwen-plus，官方申請地址：https://www.aliyun.com/product/bailian）
+    FORUM_HOST_API_KEY: Optional[str] = Field(None, description="Forum Host（推薦 qwen-plus，官方申請地址：https://www.aliyun.com/product/bailian）API 密鑰")
+    FORUM_HOST_BASE_URL: Optional[str] = Field(None, description="Forum Host LLM BaseUrl，可按所選服務配置")
+    FORUM_HOST_MODEL_NAME: Optional[str] = Field(None, description="Forum Host LLM 模型名稱，例如 qwen-plus")
+
+    # SQL Keyword Optimizer（推薦qwen-plus，官方申請地址：https://www.aliyun.com/product/bailian）
+    KEYWORD_OPTIMIZER_API_KEY: Optional[str] = Field(None, description="SQL Keyword Optimizer（推薦 qwen-plus，官方申請地址：https://www.aliyun.com/product/bailian）API 密鑰")
+    KEYWORD_OPTIMIZER_BASE_URL: Optional[str] = Field(None, description="Keyword Optimizer BaseUrl，可按所選服務配置")
+    KEYWORD_OPTIMIZER_MODEL_NAME: Optional[str] = Field(None, description="Keyword Optimizer LLM 模型名稱，例如 qwen-plus")
     
     # ================== 網絡工具配置 ====================
     # Tavily API（申請地址：https://www.tavily.com/）
