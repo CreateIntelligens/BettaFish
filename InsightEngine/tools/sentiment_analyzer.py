@@ -11,7 +11,11 @@ import re
 
 try:
     import torch
+
     TORCH_AVAILABLE = True
+    # 清理 torch.classes 的 path，避免部分環境下的奇怪報錯
+    if hasattr(torch, "classes") and hasattr(torch.classes, "__path__"):
+        torch.classes.__path__ = []
 except ImportError:
     torch = None  # type: ignore
     TORCH_AVAILABLE = False
@@ -127,6 +131,7 @@ class WeiboMultilingualSentimentAnalyzer:
         """Select the best available torch device."""
         if not TORCH_AVAILABLE:
             return None
+        assert torch is not None
         if torch.cuda.is_available():
             return torch.device("cuda")
         mps_backend = getattr(torch.backends, "mps", None)

@@ -58,10 +58,10 @@ class HTMLGenerationNode(StateMutationNode):
             
             # 轉換爲JSON格式傳遞給LLM
             message = json.dumps(llm_input, ensure_ascii=False, indent=2)
-            
-            # 調用LLM生成HTML
-            response = self.llm_client.invoke(SYSTEM_PROMPT_HTML_GENERATION, message)
-            
+
+            # 調用LLM生成HTML（流式，安全拼接UTF-8）
+            response = self.llm_client.stream_invoke_to_string(SYSTEM_PROMPT_HTML_GENERATION, message)
+
             # 處理響應（簡化版）
             processed_response = self.process_output(response)
             

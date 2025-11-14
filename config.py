@@ -11,8 +11,9 @@ import os
 import time
 from pathlib import Path
 from pydantic_settings import BaseSettings
-from pydantic import Field
+from pydantic import Field, ConfigDict
 from typing import Optional
+from loguru import logger
 
 
 # 計算 .env 優先級：優先當前工作目錄，其次項目根目錄
@@ -26,17 +27,22 @@ class Settings(BaseSettings):
     全局配置；支持 .env 和環境變量自動加載。
     變量名與原 config.py 大寫一致，便於平滑過渡。
     """
-    
+    # ================== Flask 服務器配置 ====================
+    HOST: str = Field("0.0.0.0", description="Flask服務器主機地址，默認0.0.0.0（允許外部訪問）")
+    PORT: int = Field(5000, description="Flask服務器端口號，默認5000")
+
     # ====================== 數據庫配置 ======================
     DB_DIALECT: str = Field("mysql", description="數據庫類型，例如 'mysql' 或 'postgresql'。用於支持多種數據庫後端（如 SQLAlchemy，請與連接信息共同配置）")
-    DB_HOST: str = Field("your_db_host", description="數據庫主機，例如localhost 或 127.0.0.1。我們也提供雲數據庫資源便捷配置，日均10w+數據，可免費申請，聯繫我們：670939375@qq.com NOTE：爲進行數據合規性審查與服務升級，雲數據庫自2025年10月1日起暫停接收新的使用申請")
-    DB_PORT: int = Field(3306, description="數據庫端口號，默認爲3306")
+    DB_HOST: str = Field("your_db_host", description="數據庫主機，例如localhost 或 127.0.0.1。我們也提供雲數據庫資源便捷配置，日均10w+數據，可免費申請，聯繫我們：670939375@qq.com NOTE：為進行數據合規性審查與服務升級，雲數據庫自2025年10月1日起暫停接收新的使用申請")
+    DB_PORT: int = Field(3306, description="數據庫端口號，默認為3306")
     DB_USER: str = Field("your_db_user", description="數據庫用戶名")
     DB_PASSWORD: str = Field("your_db_password", description="數據庫密碼")
     DB_NAME: str = Field("your_db_name", description="數據庫名稱")
     DB_CHARSET: str = Field("utf8mb4", description="數據庫字符集，推薦utf8mb4，兼容emoji")
-    
+
     # ======================= LLM 相關 =======================
+    # 我們的LLM模型API贊助商有：https://share.302.ai/P66Qe3、https://aihubmix.com/?aff=8Ds9，提供了非常全面的模型api
+
     # Insight Agent（推薦Kimi，申請地址：https://platform.moonshot.cn/）
     INSIGHT_ENGINE_API_KEY: Optional[str] = Field(None, description="Insight Agent（推薦Kimi，https://platform.moonshot.cn/）API密鑰，用於主LLM。您可以更改每個部分LLM使用的API，🚩只要兼容OpenAI請求格式都可以，定義好KEY、BASE_URL與MODEL_NAME即可正常使用。重要提醒：我們強烈推薦您先使用推薦的配置申請API，先跑通再進行您的更改！")
     INSIGHT_ENGINE_BASE_URL: Optional[str] = Field("https://api.moonshot.cn/v1", description="Insight Agent LLM接口BaseUrl，可自定義廠商API")
@@ -91,11 +97,12 @@ class Settings(BaseSettings):
     # ================== 系統環境 ====================
     TIMEZONE: str = Field("Etc/GMT-8", description="系統時區，默認為UTC+8（Etc/GMT-8）")
     
-    class Config:
-        env_file = ENV_FILE
-        env_prefix = ""
-        case_sensitive = False
-        extra = "allow"
+    model_config = ConfigDict(
+        env_file=ENV_FILE,
+        env_prefix="",
+        case_sensitive=False,
+        extra="allow"
+    )
 
 
 # 創建全局配置實例
@@ -103,7 +110,7 @@ settings = Settings()
 
 
 def _normalize_timezone(value: str) -> str:
-    """Resolve common aliases like UTC+8 to a tz database name."""
+    """解析常見時區別名如 UTC+8 到 tz 資料庫名稱。"""
     if not value:
         return ""
     cleaned = value.strip()
@@ -123,6 +130,23 @@ def _apply_timezone():
     os.environ["TZ"] = tz_value
     if hasattr(time, "tzset"):
         time.tzset()
+
+
+def reload_settings() -> Settings:
+    """
+    重新加載配置
+
+    從 .env 文件和環境變量重新加載配置，更新全局 settings 實例。
+    用於在運行時動態更新配置。
+
+    Returns:
+        Settings: 新創建的配置實例
+    """
+
+    global settings
+    settings = Settings()
+    _apply_timezone()  # 重新應用時區
+    return settings
 
 
 _apply_timezone()

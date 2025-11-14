@@ -14,16 +14,14 @@ services:
       - bettafish-network
 
   bettafish:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: bettafish:latest
+    image: ghcr.io/666ghj/bettafish:latest
+    # Speed up mirror
+    # image: ghcr.nju.edu.cn/666ghj/bettafish:latest
     container_name: bettafish
     restart: unless-stopped
-    env_file:
-      - .env
     environment:
       - PYTHONUNBUFFERED=1
+      - STREAMLIT_SERVER_ENABLE_FILE_WATCHER=false
     deploy:
       resources:
         reservations:

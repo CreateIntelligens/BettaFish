@@ -193,7 +193,7 @@ flowchart TB
    - 記錄任務狀態、進度、結果等
 
 5. **平臺內容表**（繼承自MediaCrawler）
-   - xhs_note - 小紅書筆記
+   - xhs_note - 小紅書筆記（暫時廢棄，詳情可查看：https://github.com/NanmiCoder/MediaCrawler/issues/754）
    - douyin_aweme - 抖音視頻
    - kuaishou_video - 快手視頻
    - bilibili_video - B站視頻
@@ -206,7 +206,7 @@ flowchart TB
 ### 環境要求
 
 - Python 3.9 或更高版本
-- MySQL 5.7 或更高版本
+- MySQL 5.7 或更高版本，或 PostgreSQL
 - Conda環境：pytorch_python11（推薦）
 - 操作系統：Windows/Linux/macOS
 
@@ -218,8 +218,6 @@ cd MindSpider
 ```
 
 ### 2. 創建並激活環境
-
-#### Conda配置方法
 
 #### Conda配置方法
 
@@ -275,7 +273,7 @@ DB_PASSWORD = "your_password"
 DB_NAME = "mindspider"
 DB_CHARSET = "utf8mb4"
 
-# DeepSeek API密鑰
+# MINDSPIDER API密鑰
 MINDSPIDER_BASE_URL=your_api_base_url
 MINDSPIDER_API_KEY=sk-your-key
 MINDSPIDER_MODEL_NAME=deepseek-chat
@@ -325,7 +323,7 @@ python main.py --broad-topic --date 2024-01-15
 
 **首次使用每個平臺都需要登錄，這是最關鍵的步驟：**
 
-1. **小紅書登錄**
+1. **小紅書登錄**（暫時廢棄，詳情：https://github.com/NanmiCoder/MediaCrawler/issues/754）
 ```bash
 # 測試小紅書爬取（會彈出二維碼）
 python main.py --deep-sentiment --platforms xhs --test
@@ -369,6 +367,11 @@ python main.py --deep-sentiment --platforms zhihu --test
 3. **手動處理驗證**：有些平臺可能需要手動滑動驗證碼
 4. **重新登錄**：刪除 `DeepSentimentCrawling/MediaCrawler/browser_data/` 目錄重新登錄
 
+
+### 其他問題
+
+如遇未覆蓋的報錯，可先參考：https://github.com/666ghj/BettaFish/issues/185
+
 ### 爬取參數調整
 
 在實際使用前建議調整爬取參數：
@@ -394,8 +397,8 @@ python main.py --deep-sentiment --date 2024-01-15
 
 #### 2. 指定平臺爬取
 ```bash
-# 只爬取小紅書和抖音
-python main.py --deep-sentiment --platforms xhs dy --test
+# 只爬取B站和抖音
+python main.py --deep-sentiment --platforms bili dy --test
 
 # 爬取所有平臺的特定數量內容
 python main.py --deep-sentiment --max-keywords 30 --max-notes 20
@@ -405,7 +408,7 @@ python main.py --deep-sentiment --max-keywords 30 --max-notes 20
 
 ```bash
 --status              # 檢查項目狀態
---setup               # 初始化項目
+--setup               # 初始化項目（已內置自動流程，通常可忽略）
 --broad-topic         # 話題提取
 --deep-sentiment      # 爬蟲模塊
 --complete            # 完整流程

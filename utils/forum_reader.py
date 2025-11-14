@@ -6,10 +6,7 @@ Forum日誌讀取工具
 import re
 from pathlib import Path
 from typing import Optional, List, Dict
-import logging
-
-logger = logging.getLogger(__name__)
-
+from loguru import logger
 
 def get_latest_host_speech(log_dir: str = "logs") -> Optional[str]:
     """

@@ -49,18 +49,29 @@ class LogMonitor:
         self.agent_speeches_buffer = []  # agent發言緩衝區
         self.host_speech_threshold = 5  # 每5條agent發言觸發一次主持人發言
         self.is_host_generating = False  # 主持人是否正在生成發言
-       
-        # 目標節點名稱 - 直接匹配字符串
-        self.target_nodes = [
-            'FirstSummaryNode',
-            'ReflectionSummaryNode'
+
+        # 目標節點識別模式
+        # 1. 類名（舊格式可能包含）
+        # 2. 完整模塊路徑（實際日誌格式，包含引擎前綴）
+        # 3. 部分模塊路徑（兼容性）
+        # 4. 關鍵標識文本
+        self.target_node_patterns = [
+            'FirstSummaryNode',  # 類名
+            'ReflectionSummaryNode',  # 類名
+            'InsightEngine.nodes.summary_node',  # InsightEngine完整路徑
+            'MediaEngine.nodes.summary_node',  # MediaEngine完整路徑
+            'QueryEngine.nodes.summary_node',  # QueryEngine完整路徑
+            'nodes.summary_node',  # 模塊路徑（兼容性，用於部分匹配）
+            '正在生成首次段落總結',  # FirstSummaryNode的標識
+            '正在生成反思總結',  # ReflectionSummaryNode的標識
         ]
-        
+
         # 多行內容捕獲狀態
         self.capturing_json = {}  # 每個app的JSON捕獲狀態
         self.json_buffer = {}     # 每個app的JSON緩衝區
         self.json_start_line = {} # 每個app的JSON開始行
-       
+        self.in_error_block = {}  # 每個app是否在ERROR塊中
+
         # 確保logs目錄存在
         self.log_dir.mkdir(exist_ok=True)
    
@@ -83,6 +94,7 @@ class LogMonitor:
             self.capturing_json = {}
             self.json_buffer = {}
             self.json_start_line = {}
+            self.in_error_block = {}
             
             # 重置主持人相關狀態
             self.agent_speeches_buffer = []
@@ -107,12 +119,53 @@ class LogMonitor:
                     f.flush()
         except Exception as e:
             logger.exception(f"ForumEngine: 寫入forum.log失敗: {e}")
-   
+
+    def get_log_level(self, line: str) -> Optional[str]:
+        """檢測日誌行的級別（INFO/ERROR/WARNING/DEBUG等）
+
+        支持loguru格式：YYYY-MM-DD HH:mm:ss.SSS | LEVEL | ...
+
+        Returns:
+            'INFO', 'ERROR', 'WARNING', 'DEBUG' 或 None（無法識別）
+        """
+        # 檢查loguru格式：YYYY-MM-DD HH:mm:ss.SSS | LEVEL | ...
+        # 匹配模式：| LEVEL | 或 | LEVEL     |
+        match = re.search(r'\|\s*(INFO|ERROR|WARNING|DEBUG|TRACE|CRITICAL)\s*\|', line)
+        if match:
+            return match.group(1)
+        return None
+
     def is_target_log_line(self, line: str) -> bool:
-        """檢查是否是目標日誌行（SummaryNode）"""
-        # 簡單字符串包含檢查，更可靠
-        for node_name in self.target_nodes:
-            if node_name in line:
+        """檢查是否是目標日誌行（SummaryNode）
+
+        支持多種識別方式：
+        1. 類名：FirstSummaryNode, ReflectionSummaryNode
+        2. 完整模塊路徑：InsightEngine.nodes.summary_node、MediaEngine.nodes.summary_node、QueryEngine.nodes.summary_node
+        3. 部分模塊路徑：nodes.summary_node（兼容性）
+        4. 關鍵標識文本：正在生成首次段落總結、正在生成反思總結
+
+        排除條件：
+        - ERROR 級別的日誌（錯誤日誌不應被識別為目標節點）
+        - 包含錯誤關鍵詞的日誌（JSON解析失敗、JSON修復失敗等）
+        """
+        # 排除 ERROR 級別的日誌
+        log_level = self.get_log_level(line)
+        if log_level == 'ERROR':
+            return False
+
+        # 兼容舊檢查方式
+        if "| ERROR" in line or "| ERROR    |" in line:
+            return False
+
+        # 排除包含錯誤關鍵詞的日誌
+        error_keywords = ["JSON解析失敗", "JSON修復失敗", "Traceback", "File \""]
+        for keyword in error_keywords:
+            if keyword in line:
+                return False
+
+        # 檢查是否包含目標節點模式
+        for pattern in self.target_node_patterns:
+            if pattern in line:
                 return True
         return False
     
@@ -143,9 +196,12 @@ class LogMonitor:
         for pattern in exclude_patterns:
             if pattern in line:
                 return False
-        
-        # 如果行長度過短，也認爲不是有價值的內容
-        clean_line = re.sub(r'\[\d{2}:\d{2}:\d{2}\]', '', line).strip()
+
+        # 如果行長度過短，也認為不是有價值的內容
+        # 移除時間戳：支持舊格式和新格式
+        clean_line = re.sub(r'\[\d{2}:\d{2}:\d{2}\]', '', line)
+        clean_line = re.sub(r'\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}\.\d{3}\s*\|\s*[A-Z]+\s*\|\s*[^|]+?\s*-\s*', '', clean_line)
+        clean_line = clean_line.strip()
         if len(clean_line) < 30:  # 閾值可以調整
             return False
             
@@ -156,9 +212,25 @@ class LogMonitor:
         return "清理後的輸出: {" in line
     
     def is_json_end_line(self, line: str) -> bool:
-        """判斷是否是JSON結束行"""
+        """判斷是否是JSON結束行
+
+        只判斷純粹的結束標記行，不包含任何日誌格式信息（時間戳等）。
+        如果行包含時間戳，應該先清理再判斷，但這裡返回False表示需要進一步處理。
+        """
         stripped = line.strip()
-        return stripped == "}" or (stripped.startswith("[") and stripped.endswith("] }"))
+        
+        # 如果行包含时间戳（旧格式或新格式），说明不是纯粹的结束行
+        # 旧格式：[HH:MM:SS]
+        if re.match(r'^\[\d{2}:\d{2}:\d{2}\]', stripped):
+            return False
+        # 新格式：YYYY-MM-DD HH:mm:ss.SSS
+        if re.match(r'^\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}\.\d{3}', stripped):
+            return False
+        
+        # 不包含时间戳的行，检查是否是纯结束标记
+        if stripped == "}" or stripped == "] }":
+            return True
+        return False
     
     def extract_json_content(self, json_lines: List[str]) -> Optional[str]:
         """從多行中提取並解析JSON內容"""
@@ -200,8 +272,12 @@ class LogMonitor:
             # 處理多行JSON
             json_text = json_part
             for line in json_lines[json_start_idx + 1:]:
-                # 移除時間戳
+                # 移除時間戳：支持舊格式 [HH:MM:SS] 和新格式 loguru (YYYY-MM-DD HH:mm:ss.SSS | LEVEL | ...)
+                # 舊格式：[HH:MM:SS]
                 clean_line = re.sub(r'^\[\d{2}:\d{2}:\d{2}\]\s*', '', line)
+                # 新格式：移除 loguru 格式的时间戳和级别信息
+                # 格式: YYYY-MM-DD HH:mm:ss.SSS | LEVEL | module:function:line -
+                clean_line = re.sub(r'^\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}\.\d{3}\s*\|\s*[A-Z]+\s*\|\s*[^|]+?\s*-\s*', '', clean_line)
                 json_text += clean_line
             
             # 嘗試解析JSON
@@ -247,42 +323,51 @@ class LogMonitor:
 
     def extract_node_content(self, line: str) -> Optional[str]:
         """提取節點內容，去除時間戳、節點名稱等前綴"""
-        # 移除時間戳部分
-        # 格式: [HH:MM:SS] [NodeName] message
-        match = re.search(r'\[\d{2}:\d{2}:\d{2}\]\s*(.+)', line)
-        if match:
-            content = match.group(1).strip()
-            
-            # 移除所有的方括號標籤（包括節點名稱和應用名稱）
+        content = line
+
+        # 移除時間戳部分：支持舊格式和新格式
+        # 舊格式: [HH:MM:SS]
+        match_old = re.search(r'\[\d{2}:\d{2}:\d{2}\]\s*(.+)', content)
+        if match_old:
+            content = match_old.group(1).strip()
+        else:
+            # 新格式: YYYY-MM-DD HH:mm:ss.SSS | LEVEL | module:function:line -
+            match_new = re.search(r'\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}\.\d{3}\s*\|\s*[A-Z]+\s*\|\s*[^|]+?\s*-\s*(.+)', content)
+            if match_new:
+                content = match_new.group(1).strip()
+
+        if not content:
+            return line.strip()
+
+        # 移除所有的方括號標籤（包括節點名稱和應用名稱）
+        content = re.sub(r'^\[.*?\]\s*', '', content)
+
+        # 繼續移除可能的多個連續標籤
+        while re.match(r'^\[.*?\]\s*', content):
             content = re.sub(r'^\[.*?\]\s*', '', content)
-            
-            # 繼續移除可能的多個連續標籤
-            while re.match(r'^\[.*?\]\s*', content):
-                content = re.sub(r'^\[.*?\]\s*', '', content)
-            
-            # 移除常見前綴（如"首次總結: "、"反思總結: "等）
-            prefixes_to_remove = [
-                "首次總結: ",
-                "反思總結: ",
-                "清理後的輸出: "
-            ]
-            
-            for prefix in prefixes_to_remove:
-                if content.startswith(prefix):
-                    content = content[len(prefix):]
-                    break
-            
-            # 移除可能存在的應用名標籤（不在方括號內的）
-            app_names = ['INSIGHT', 'MEDIA', 'QUERY']
-            for app_name in app_names:
-                # 移除單獨的APP_NAME（在行首）
-                content = re.sub(rf'^{app_name}\s+', '', content, flags=re.IGNORECASE)
-            
-            # 清理多餘的空格
-            content = re.sub(r'\s+', ' ', content)
-            
-            return content.strip()
-        return line.strip()
+
+        # 移除常見前綴（如"首次總結: "、"反思總結: "等）
+        prefixes_to_remove = [
+            "首次總結: ",
+            "反思總結: ",
+            "清理後的輸出: "
+        ]
+
+        for prefix in prefixes_to_remove:
+            if content.startswith(prefix):
+                content = content[len(prefix):]
+                break
+
+        # 移除可能存在的應用名標籤（不在方括號內的）
+        app_names = ['INSIGHT', 'MEDIA', 'QUERY']
+        for app_name in app_names:
+            # 移除單獨的APP_NAME（在行首）
+            content = re.sub(rf'^{app_name}\s+', '', content, flags=re.IGNORECASE)
+
+        # 清理多餘的空格
+        content = re.sub(r'\s+', ' ', content)
+
+        return content.strip()
    
     def get_file_size(self, file_path: Path) -> int:
         """獲取文件大小"""
@@ -318,6 +403,7 @@ class LogMonitor:
                 # 重置JSON捕獲狀態
                 self.capturing_json[app_name] = False
                 self.json_buffer[app_name] = []
+                self.in_error_block[app_name] = False
            
             if current_size > last_position:
                 with open(file_path, 'r', encoding='utf-8') as f:
@@ -337,48 +423,91 @@ class LogMonitor:
         return new_lines
    
     def process_lines_for_json(self, lines: List[str], app_name: str) -> List[str]:
-        """處理行以捕獲多行JSON內容"""
+        """處理行以捕獲多行JSON內容
+
+        實現ERROR塊過濾：如果遇到ERROR級別的日誌，拒絕處理直到遇到下一個INFO級別的日誌
+        """
         captured_contents = []
-        
+
         # 初始化狀態
         if app_name not in self.capturing_json:
             self.capturing_json[app_name] = False
             self.json_buffer[app_name] = []
+        if app_name not in self.in_error_block:
+            self.in_error_block[app_name] = False
         
         for line in lines:
             if not line.strip():
                 continue
+            
+            # 首先检查日志级别，更新ERROR块状态
+            log_level = self.get_log_level(line)
+            if log_level == 'ERROR':
+                # 遇到ERROR，进入ERROR块状态
+                self.in_error_block[app_name] = True
+                # 如果正在捕获JSON，立即停止并清空缓冲区
+                if self.capturing_json[app_name]:
+                    self.capturing_json[app_name] = False
+                    self.json_buffer[app_name] = []
+                # 跳过当前行，不处理
+                continue
+            elif log_level == 'INFO':
+                # 遇到INFO，退出ERROR块状态
+                self.in_error_block[app_name] = False
+            # 其他级别（WARNING、DEBUG等）保持当前状态
+            
+            # 如果在ERROR块中，拒绝处理所有内容
+            if self.in_error_block[app_name]:
+                # 如果正在捕获JSON，立即停止并清空缓冲区
+                if self.capturing_json[app_name]:
+                    self.capturing_json[app_name] = False
+                    self.json_buffer[app_name] = []
+                # 跳过当前行，不处理
+                continue
                 
-            # 檢查是否是目標節點行
-            if self.is_target_log_line(line):
-                if self.is_json_start_line(line):
-                    # 開始捕獲JSON
-                    self.capturing_json[app_name] = True
-                    self.json_buffer[app_name] = [line]
-                    self.json_start_line[app_name] = line
-                    
-                    # 檢查是否是單行JSON
-                    if line.strip().endswith("}"):
-                        # 單行JSON，立即處理
-                        content = self.extract_json_content([line])
-                        if content:  # 只有成功解析的內容纔會被記錄
-                            # 去除重複的標籤和格式化
-                            clean_content = self._clean_content_tags(content, app_name)
-                            captured_contents.append(f"{clean_content}")
-                        self.capturing_json[app_name] = False
-                        self.json_buffer[app_name] = []
-                        
-                elif self.is_valuable_content(line):
-                    # 其他有價值的SummaryNode內容
-                    clean_content = self._clean_content_tags(self.extract_node_content(line), app_name)
-                    captured_contents.append(f"{clean_content}")
+            # 檢查是否是目標節點行和JSON開始標記
+            is_target = self.is_target_log_line(line)
+            is_json_start = self.is_json_start_line(line)
+
+            # 只有目標節點（SummaryNode）的JSON輸出才應該被捕獲
+            # 過濾掉SearchNode等其他節點的輸出（它們不是目標節點，即使有JSON也不會被捕獲）
+            if is_target and is_json_start:
+                # 開始捕獲JSON（必須是目標節點且包含"清理後的輸出: {"）
+                self.capturing_json[app_name] = True
+                self.json_buffer[app_name] = [line]
+                self.json_start_line[app_name] = line
+
+                # 檢查是否是單行JSON
+                if line.strip().endswith("}"):
+                    # 單行JSON，立即處理
+                    content = self.extract_json_content([line])
+                    if content:  # 只有成功解析的內容才會被記錄
+                        # 去除重複的標籤和格式化
+                        clean_content = self._clean_content_tags(content, app_name)
+                        captured_contents.append(f"{clean_content}")
+                    self.capturing_json[app_name] = False
+                    self.json_buffer[app_name] = []
+
+            elif is_target and self.is_valuable_content(line):
+                # 其他有價值的SummaryNode內容（必須是目標節點且有價值）
+                clean_content = self._clean_content_tags(self.extract_node_content(line), app_name)
+                captured_contents.append(f"{clean_content}")
                     
             elif self.capturing_json[app_name]:
                 # 正在捕獲JSON的後續行
                 self.json_buffer[app_name].append(line)
-                
+
                 # 檢查是否是JSON結束
-                if self.is_json_end_line(line):
+                # 先清理時間戳，然後判斷清理後的行是否是結束標記
+                cleaned_line = line.strip()
+                # 清理舊格式時間戳：[HH:MM:SS]
+                cleaned_line = re.sub(r'^\[\d{2}:\d{2}:\d{2}\]\s*', '', cleaned_line)
+                # 清理新格式時間戳：YYYY-MM-DD HH:mm:ss.SSS | LEVEL | module:function:line -
+                cleaned_line = re.sub(r'^\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}\.\d{3}\s*\|\s*[A-Z]+\s*\|\s*[^|]+?\s*-\s*', '', cleaned_line)
+                cleaned_line = cleaned_line.strip()
+
+                # 清理後判斷是否是結束標記
+                if cleaned_line == "}" or cleaned_line == "] }":
                     # JSON結束，處理完整的JSON
                     content = self.extract_json_content(self.json_buffer[app_name])
                     if content:  # 只有成功解析的內容纔會被記錄
@@ -462,6 +591,7 @@ class LogMonitor:
             self.file_positions[app_name] = self.get_file_size(log_file)
             self.capturing_json[app_name] = False
             self.json_buffer[app_name] = []
+            self.in_error_block[app_name] = False
             # logger.info(f"ForumEngine: {app_name} 基線行數: {self.file_line_counts[app_name]}")
        
         while self.is_monitoring:
@@ -484,13 +614,16 @@ class LogMonitor:
                         # 先檢查是否需要觸發搜索（只觸發一次）
                         if not self.is_searching:
                             for line in new_lines:
-                                if line.strip() and 'FirstSummaryNode' in line:
-                                    logger.info(f"ForumEngine: 在{app_name}中檢測到第一次論壇發表內容")
-                                    self.is_searching = True
-                                    self.search_inactive_count = 0
-                                    # 清空forum.log開始新會話
-                                    self.clear_forum_log()
-                                    break  # 找到一個就夠了，跳出循環
+                                # 檢查是否包含目標節點模式（支持多種格式）
+                                if line.strip() and self.is_target_log_line(line):
+                                    # 進一步確認是首次總結節點（FirstSummaryNode或包含"正在生成首次段落總結"）
+                                    if 'FirstSummaryNode' in line or '正在生成首次段落總結' in line:
+                                        logger.info(f"ForumEngine: 在{app_name}中檢測到第一次論壇發表內容")
+                                        self.is_searching = True
+                                        self.search_inactive_count = 0
+                                        # 清空forum.log開始新會話
+                                        self.clear_forum_log()
+                                        break  # 找到一個就夠了，跳出循環
                        
                         # 處理所有新增內容（如果正在搜索狀態）
                         if self.is_searching:
@@ -522,6 +655,7 @@ class LogMonitor:
                         # 重置JSON捕獲狀態
                         self.capturing_json[app_name] = False
                         self.json_buffer[app_name] = []
+                        self.in_error_block[app_name] = False
                    
                     # 更新行數記錄
                     self.file_line_counts[app_name] = current_lines
@@ -543,7 +677,7 @@ class LogMonitor:
                     elif not any_growth and not captured_any:
                         # 沒有增長也沒有捕獲內容，增加非活躍計數
                         self.search_inactive_count += 1
-                        if self.search_inactive_count >= 900:  # 15分鐘無活動才結束
+                        if self.search_inactive_count >= 7200:  # 超時無活動自動結束
                             logger.info("ForumEngine: 長時間無活動，結束論壇")
                             self.is_searching = False
                             self.search_inactive_count = 0

@@ -50,10 +50,10 @@ class ReportStructureNode(StateMutationNode):
         """
         try:
             logger.info(f"正在爲查詢生成報告結構: {self.query}")
-            
-            # 調用LLM
-            response = self.llm_client.invoke(SYSTEM_PROMPT_REPORT_STRUCTURE, self.query)
-            
+
+            # 調用LLM（流式，安全拼接UTF-8）
+            response = self.llm_client.stream_invoke_to_string(SYSTEM_PROMPT_REPORT_STRUCTURE, self.query)
+
             # 處理響應
             processed_response = self.process_output(response)
             
@@ -87,11 +87,11 @@ class ReportStructureNode(StateMutationNode):
                 report_structure = json.loads(cleaned_output)
                 logger.info("JSON解析成功")
             except JSONDecodeError as e:
-                logger.exception(f"JSON解析失敗: {str(e)}")
+                logger.error(f"JSON解析失敗: {str(e)}")
                 # 使用更強大的提取方法
                 report_structure = extract_clean_response(cleaned_output)
                 if "error" in report_structure:
-                    logger.exception("JSON解析失敗，嘗試修復...")
+                    logger.error("JSON解析失敗，嘗試修復...")
                     # 嘗試修復JSON
                     fixed_json = fix_incomplete_json(cleaned_output)
                     if fixed_json:
@@ -99,11 +99,11 @@ class ReportStructureNode(StateMutationNode):
                             report_structure = json.loads(fixed_json)
                             logger.info("JSON修復成功")
                         except JSONDecodeError:
-                            logger.exception("JSON修復失敗")
+                            logger.error("JSON修復失敗")
                             # 返回默認結構
                             return self._generate_default_structure()
                     else:
-                        logger.exception("無法修復JSON，使用默認結構")
+                        logger.error("無法修復JSON，使用默認結構")
                         return self._generate_default_structure()
             
             # 驗證結構

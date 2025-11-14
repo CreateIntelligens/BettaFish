@@ -64,10 +64,10 @@ class FirstSearchNode(BaseNode):
                 message = json.dumps(input_data, ensure_ascii=False)
             
             logger.info("正在生成首次搜索查詢")
-            
-            # 調用LLM
-            response = self.llm_client.invoke(SYSTEM_PROMPT_FIRST_SEARCH, message)
-            
+
+            # 調用LLM（流式，安全拼接UTF-8）
+            response = self.llm_client.stream_invoke_to_string(SYSTEM_PROMPT_FIRST_SEARCH, message)
+
             # 處理響應
             processed_response = self.process_output(response)
             
@@ -101,7 +101,7 @@ class FirstSearchNode(BaseNode):
                 result = json.loads(cleaned_output)
                 logger.info("JSON解析成功")
             except JSONDecodeError as e:
-                logger.exception(f"JSON解析失敗: {str(e)}")
+                logger.error(f"JSON解析失敗: {str(e)}")
                 # 使用更強大的提取方法
                 result = extract_clean_response(cleaned_output)
                 if "error" in result:
@@ -199,10 +199,10 @@ class ReflectionNode(BaseNode):
                 message = json.dumps(input_data, ensure_ascii=False)
             
             logger.info("正在進行反思並生成新搜索查詢")
-            
-            # 調用LLM
-            response = self.llm_client.invoke(SYSTEM_PROMPT_REFLECTION, message)
-            
+
+            # 調用LLM（流式，安全拼接UTF-8）
+            response = self.llm_client.stream_invoke_to_string(SYSTEM_PROMPT_REFLECTION, message)
+
             # 處理響應
             processed_response = self.process_output(response)
             
@@ -236,7 +236,7 @@ class ReflectionNode(BaseNode):
                 result = json.loads(cleaned_output)
                 logger.info("JSON解析成功")
             except JSONDecodeError as e:
-                logger.exception(f"JSON解析失敗: {str(e)}")
+                logger.error(f"JSON解析失敗: {str(e)}")
                 # 使用更強大的提取方法
                 result = extract_clean_response(cleaned_output)
                 if "error" in result:

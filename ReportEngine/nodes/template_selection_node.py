@@ -113,10 +113,10 @@ class TemplateSelectionNode(BaseNode):
 {template_list}
 
 請根據查詢內容、報告內容和論壇日誌的具體情況，選擇最合適的模板。"""
-        
-        # 調用LLM
-        response = self.llm_client.invoke(SYSTEM_PROMPT_TEMPLATE_SELECTION, user_message)
-        
+
+        # 調用LLM（流式，安全拼接UTF-8）
+        response = self.llm_client.stream_invoke_to_string(SYSTEM_PROMPT_TEMPLATE_SELECTION, user_message)
+
         # 檢查響應是否爲空
         if not response or not response.strip():
             logger.error("LLM返回空響應")
@@ -143,9 +143,9 @@ class TemplateSelectionNode(BaseNode):
             
             logger.error(f"LLM選擇的模板不存在: {selected_template_name}")
             return None
-            
+
         except json.JSONDecodeError as e:
-            logger.exception(f"JSON解析失敗: {str(e)}")
+            logger.error(f"JSON解析失敗: {str(e)}")
             # 嘗試從文本響應中提取模板信息
             return self._extract_template_from_text(response, available_templates)
     

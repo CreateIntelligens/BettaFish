@@ -16,6 +16,7 @@ import requests
 from loguru import logger
 import importlib
 from pathlib import Path
+from MindSpider.main import MindSpider
 
 from config import settings as app_settings
 
@@ -50,6 +51,8 @@ LOG_DIR.mkdir(exist_ok=True)
 CONFIG_MODULE_NAME = 'config'
 CONFIG_FILE_PATH = Path(__file__).resolve().parent / 'config.py'
 CONFIG_KEYS = [
+    'HOST',
+    'PORT',
     'DB_DIALECT',
     'DB_HOST',
     'DB_PORT',
@@ -98,20 +101,11 @@ def _load_config_module():
 def read_config_values():
     """Return the current configuration values that are exposed to the frontend."""
     try:
-        # 重新導入 config 模塊以獲取最新的 Settings 實例
-        importlib.invalidate_caches()
-        if CONFIG_MODULE_NAME in sys.modules:
-            importlib.reload(sys.modules[CONFIG_MODULE_NAME])
-        else:
-            importlib.import_module(CONFIG_MODULE_NAME)
-        
-        # 從 config 模塊獲取 settings 實例
-        config_module = sys.modules[CONFIG_MODULE_NAME]
-        if not hasattr(config_module, 'settings'):
-            logger.error("config 模塊中沒有找到 settings 實例")
-            return {}
-        
-        settings = config_module.settings
+        # 重新載入配置以獲取最新的 Settings 實例
+        from config import reload_settings, settings
+        reload_settings()
+
+
         values = {}
         for key in CONFIG_KEYS:
             # 從 Pydantic Settings 實例讀取值
@@ -234,6 +228,12 @@ def initialize_system_components():
     """啓動所有依賴組件（Streamlit 子應用、ForumEngine、ReportEngine）。"""
     logs = []
     errors = []
+    
+    spider = MindSpider()
+    if spider.initialize_database():
+        logger.info("資料庫初始化成功")
+    else:
+        logger.error("資料庫初始化失敗")
 
     try:
         stop_forum_engine()
@@ -559,7 +559,8 @@ def read_process_output(process, app_name):
                             })
                             
         except Exception as e:
-            logger.exception(f"Error reading output for {app_name}: {e}")
+            error_msg = f"Error reading output for {app_name}: {e}"
+            logger.exception(error_msg)
             write_log_to_file(app_name, f"[{datetime.now().strftime('%H:%M:%S')}] {error_msg}")
             break
 
@@ -662,6 +663,14 @@ def stop_streamlit_app(app_name):
     except Exception as e:
         return False, f"停止失敗: {str(e)}"
 
+HEALTHCHECK_PATH = "/_stcore/health"
+HEALTHCHECK_PROXIES = {'http': None, 'https': None}
+
+
+def _build_healthcheck_url(port):
+    return f"http://127.0.0.1:{port}{HEALTHCHECK_PATH}"
+
+
 def check_app_status():
     """檢查應用狀態"""
     for app_name, info in processes.items():
@@ -669,29 +678,27 @@ def check_app_status():
             if info['process'].poll() is None:
                 # 進程仍在運行，檢查端口是否可訪問
                 try:
-                    # 使用健康檢查端點(Streamlit 現在在根路徑提供服務)
-                    health_url = f"http://localhost:{info['port']}/healthz"
-                    response = requests.get(health_url, timeout=2)
-                    if response.status_code == 200 or response.text.strip() == "ok":
+                    response = requests.get(
+                        _build_healthcheck_url(info['port']),
+                        timeout=2,
+                        proxies=HEALTHCHECK_PROXIES
+                    )
+                    if response.status_code == 200:
                         info['status'] = 'running'
                     else:
                         info['status'] = 'starting'
-                except requests.exceptions.RequestException:
-                    info['status'] = 'starting'
-                except Exception:
+                except Exception as exc:
+                    logger.warning(f"{app_name} 健康检查失败: {exc}")
                     info['status'] = 'starting'
             else:
                 # 進程已結束
                 info['process'] = None
                 info['status'] = 'stopped'
 
-def wait_for_app_startup(app_name, max_wait_time=30):
-    """等待應用啓動完成"""
+def wait_for_app_startup(app_name, max_wait_time=90):
+    """等待應用啟動完成"""
     import time
     start_time = time.time()
-
-    # Streamlit 現在在根路徑提供服務
-    health_check_url = f"http://localhost:{processes[app_name]['port']}/healthz"
 
     while time.time() - start_time < max_wait_time:
         info = processes[app_name]
@@ -702,16 +709,20 @@ def wait_for_app_startup(app_name, max_wait_time=30):
             return False, "進程啓動失敗"
 
         try:
-            response = requests.get(health_check_url, timeout=2)
-            if response.status_code == 200 or response.text.strip() == "ok":
+            response = requests.get(
+                _build_healthcheck_url(info['port']),
+                timeout=2,
+                proxies=HEALTHCHECK_PROXIES
+            )
+            if response.status_code == 200:
                 info['status'] = 'running'
-                return True, "啓動成功"
-        except:
-            pass
+                return True, "啟動成功"
+        except Exception as exc:
+            logger.warning(f"{app_name} 健康檢查失敗: {exc}")
 
         time.sleep(1)
 
-    return False, "啓動超時"
+    return False, "啟動超時"
 
 def cleanup_processes():
     """清理所有進程"""
@@ -1040,10 +1051,13 @@ def handle_status_request():
     })
 
 if __name__ == '__main__':
-    HOST = '0.0.0.0'
-    PORT = 5000
-    logger.info("等待配置確認，系統將在前端指令後啓動組件...")
-    logger.info(f"Flask服務器已啓動，訪問地址: http://{HOST}:{PORT}")
+    # 從配置文件讀取 HOST 和 PORT
+    from config import settings
+    HOST = settings.HOST
+    PORT = settings.PORT
+
+    logger.info("等待配置確認，系統將在前端指令後啟動組件...")
+    logger.info(f"Flask服務器已啟動，訪問地址: http://{HOST}:{PORT}")
     
     try:
         socketio.run(app, host=HOST, port=PORT, debug=False)
